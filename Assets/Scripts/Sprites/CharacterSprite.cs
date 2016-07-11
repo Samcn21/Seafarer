@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-using GamepadInput;
 
+/*
 public class CharacterSprite : AnimationController
 {
 
@@ -399,3 +399,4 @@ public class CharacterSprite : AnimationController
 
     }
 }
+*/

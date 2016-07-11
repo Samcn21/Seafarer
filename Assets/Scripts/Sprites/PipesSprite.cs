@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+/*
 public class PipesSprite : AnimationController
 {
     public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Pipe;
@@ -426,3 +426,4 @@ public class PipesSprite : AnimationController
         }
     }
 }
+*/

@@ -27,7 +27,7 @@ public class AnimationController : MonoBehaviour {
         }
     }
 
-    protected void ReadSpriteSheet(GameData.SpriteSheet spriteSheet)
+    protected void ReadSpriteSheet(double spriteSheet) //to remove error changed var to double
     {
         framePosition.y = 1;
         for (iCount = currentFrame; iCount > columns; iCount -= rows)
