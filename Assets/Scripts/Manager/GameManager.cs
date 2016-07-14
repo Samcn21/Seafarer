@@ -43,6 +43,16 @@ public class GameManager : MonoBehaviour
     private float eventPeriod = 5;
     private float eventPeriodSeconds = 300;
 
+    //Screen Measurements
+    [SerializeField]
+    private int scrHight;
+    [SerializeField]
+    private int scrWidth;
+    [SerializeField]
+    private float aspectRatio;
+
+    public Camera mainCamera;
+
     void Awake()
     {
         if (instance)
@@ -56,6 +66,24 @@ public class GameManager : MonoBehaviour
         if (!isPhotonOnline)
         {
             minTeams = 1;
+        }
+
+
+    }
+
+    void Start() 
+    {
+        scrHight = Screen.height;
+        scrWidth = Screen.width;
+        aspectRatio = (float)Screen.height / Screen.width;
+
+        if (aspectRatio < 0.7f)
+        {
+            mainCamera.orthographicSize = 11.2f;
+        }
+        else 
+        {
+            mainCamera.orthographicSize = 15f;
         }
     }
 
