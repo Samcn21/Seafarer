@@ -7,28 +7,57 @@ public class GameData
     public enum GameStates
     {
         Begin,
-        TestingOnline,
-        TestingOffline,
-        InternetConnected,
-        InternetDisconnected,
-        EnableGPS,
-        DisableGPS,
         PinCode,
-        DataFetch,
-        PhotonNetworkOnline,
-        PhotonNetworkOffline,
         Ready,
         Play,
         Winning,
-        SendingData
+        Report
     }
-    public enum TestingMode
-    { 
-        NoTesting,
-        TestingOfflinePhoton,
-        TestingOnlinePhoton
 
+    public enum InternalEventType
+    {
+        GAME_INIT,
+        GAME_END,
+        AMMO_CHANGE,
+        HEALTH_CHANGE,
+        DEAD
     }
+
+    public enum TeamCountry
+    {
+        Denmark,
+        England,
+        France,
+        Germany,
+        Holland,
+        Portugal,
+        Spain,
+        Venice
+    }
+
+    public enum TeamCapital
+    {
+        Copenhagen,
+        London,
+        Paris,
+        Berlin,
+        Amsterdam,
+        Lisbon,
+        Madrid,
+        Venice
+    }
+
+    public static Dictionary<TeamCountry, TeamCapital> TeamCC = new Dictionary<TeamCountry, TeamCapital>() 
+        {
+            {TeamCountry.Denmark,   TeamCapital.Copenhagen  },
+            {TeamCountry.England,   TeamCapital.London      },
+            {TeamCountry.France,    TeamCapital.Paris       },
+            {TeamCountry.Germany,   TeamCapital.Berlin      },
+            {TeamCountry.Holland,   TeamCapital.Amsterdam   },
+            {TeamCountry.Portugal,  TeamCapital.Lisbon      },
+            {TeamCountry.Spain,     TeamCapital.Madrid      },
+            {TeamCountry.Venice,    TeamCapital.Venice      }
+        };
     /*
     public enum Team 
     {
@@ -55,15 +84,7 @@ public class GameData
         BottomRight
     }
 
-    public static Dictionary<Team, Color> TeamColors = new Dictionary<Team, Color>() 
-        {
 
-            {Team.Cyan,          new Color32(0, 255, 255 , 255) },
-            {Team.Purple,        new Color32(255, 0, 255 , 255) },
-            {Team.Yellow,        new Color32(255, 215, 0 , 255) },
-            {Team.Blue,          new Color32(0, 50, 200 , 255) },
-            {Team.Neutral,       new Color32(232, 232, 232 , 255) }
-        };
 
     public static Dictionary<Team, Color> CoopTeamColors = new Dictionary<Team, Color>()
         {

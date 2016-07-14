@@ -4,19 +4,16 @@ using Assets.Scripts.Interfaces;
 
 namespace Assets.Scripts.States
 {
-    public class BeginState : IStateBase
+    public class ResultSendingState : IStateBase
     {
         private StateManager StateManager;
-        public BeginState(StateManager managerRef)
+        //this method is constructive and works like Start() in unity method
+        public ResultSendingState(StateManager managerRef)
         {
             StateManager = managerRef;
-            StateManager.CurrentActiveState = GameData.GameStates.Begin;
         }
-
         public void StateUpdate()
         {
-            StateManager.PreActiveState = GameData.GameStates.Begin;
-            StateManager.SwitchState(new PinCodeState(StateManager));
            /* switch (StateManager.testingMode)
             {
                 case GameData.TestingMode.NoTesting:
@@ -38,11 +35,11 @@ namespace Assets.Scripts.States
             //    //StateManager.SwitchState(new PlayState(StateManager));
             //}*/
         }
-
-        public void StateShowGUI() 
+        public void StateShowGUI()
         {
-        
+
         }
+
         public void StateFixedUpdate() 
         { 
         

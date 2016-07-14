@@ -7,5 +7,7 @@ namespace Assets.Scripts.Interfaces
         void StateUpdate();
         //for fixed update
         void StateFixedUpdate();
+        //for OnGUI
+        void StateShowGUI();
     }
 }
