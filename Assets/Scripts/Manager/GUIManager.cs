@@ -4,33 +4,35 @@ using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour
 {
-    private static GUIManager instance = null;
+    private static GUIManager _instance = null;
     public static GUIManager Instance
     {
         get
         {
-            return instance;
+            return _instance;
         }
     }
 
     //Script Refrences
     public PanelPinCode PanelPinCode;
+    public PanelConnectionStatus PanelConnectionStatus;
+    public PanelSelectCountry PanelSelectCountry;
 
     //Controller variables
     [SerializeField]
-    private bool showAllPanel = false; //Demo
+    private bool _showAllPanel = false; //Demo
 
     [SerializeField]
-    private GameObject[] allPanels;
+    private GameObject[] _allPanels;
 
     public void Awake()
     {
-        if (instance)
+        if (_instance)
         {
             DestroyImmediate(this);
             return;
         }
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject.transform.parent);
 
         if (!PanelPinCode)
@@ -39,13 +41,13 @@ public class GUIManager : MonoBehaviour
 
     void Start()
     {
-        allPanels = GameObject.FindGameObjectsWithTag("Panel");
+        _allPanels = GameObject.FindGameObjectsWithTag("Panel");
     }
 
 
     public void ShowAllPanels()
     {
-        foreach (GameObject panel in allPanels)
+        foreach (GameObject panel in _allPanels)
         {
             panel.GetComponent<CanvasGroup>().alpha = 1;
         }
@@ -53,7 +55,7 @@ public class GUIManager : MonoBehaviour
 
     public void HideAllPanels()
     {
-        foreach (GameObject panel in allPanels)
+        foreach (GameObject panel in _allPanels)
         {
             panel.GetComponent<CanvasGroup>().alpha = 0;
         }

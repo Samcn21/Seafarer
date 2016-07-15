@@ -3,49 +3,55 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance = null;
+    private static GameManager _instance = null;
     public static GameManager Instance
     {
         get
         {
-            return instance;
+            return _instance;
         }
     }
 
     //Technical options
-    public bool usingGPS = false;
-    public bool connectingAdminPanel = false;
-    public bool isPhotonOnline = true;
+    [SerializeField]
+    private bool _usingGPS = false;
+    [SerializeField]
+    private bool _connectingAdminPanel = false;
+    [SerializeField]
+    private bool _onlinePhoton = true;
+    [SerializeField]
+    private bool _hasPinCodePanel = true;
 
     //Gameplay Status
-    public string pinCode = "1234";
+    [SerializeField]
+    private string _pinCode = "1234";
 
     [SerializeField]
-    private int maxTeams = 8;
+    private byte _maxTeams = 8;
 
     [Range(1, 4)]
     [SerializeField]
-    private int minTeams = 4;
+    private byte _minTeams = 4;
 
     [Range(1, 60)]
     [SerializeField]
-    private float gameplayDuration = 20;
-    private float gameplayDurationSeconds = 1200;
+    private float _gameplayDuration = 20;
+    private float _gameplayDurationSeconds = 1200;
 
     [SerializeField]
-    private bool hasEvents = true;
+    private bool _hasGameEvents = true;
 
     [SerializeField]
-    private float eventPeriod = 5;
-    private float eventPeriodSeconds = 300;
+    private float _gameEventPeriod = 5;
+    private float _gameEventPeriodSeconds = 300;
 
     //Screen Measurements
     [SerializeField]
-    private int scrHight;
+    private int _screenHight;
     [SerializeField]
-    private int scrWidth;
+    private int _screenWidth;
     [SerializeField]
-    private float aspectRatio;
+    private float _aspectRatio;
     public Camera mainCamera;
 
     //Game Objects in the scene
@@ -54,27 +60,28 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance)
+        
+        if (_instance)
         {
             DestroyImmediate(this);
             return;
         }
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject.transform.parent);
 
-        if (!isPhotonOnline)
+        if (!_onlinePhoton)
         {
-            minTeams = 1;
+            _minTeams = 1;
         }
     }
 
     void Start() 
     {
-        scrHight = Screen.height;
-        scrWidth = Screen.width;
-        aspectRatio = (float)Screen.height / Screen.width;
+        _screenHight = Screen.height;
+        _screenWidth = Screen.width;
+        _aspectRatio = (float)Screen.height / Screen.width;
 
-        if (aspectRatio < 0.7f)
+        if (_aspectRatio < 0.7f)
         {
             mainCamera.orthographicSize = 11.2f;
         }
@@ -82,8 +89,38 @@ public class GameManager : MonoBehaviour
         {
             mainCamera.orthographicSize = 15f;
         }
+
     }
 
+    public bool GameStatus(GameData.GameStatus status)
+    { 
+        switch (status)
+        {
+            case GameData.GameStatus.UsingGPS:
+                return _usingGPS;
+
+            case GameData.GameStatus.ConnectingAdminPanel:
+                return _connectingAdminPanel;
+
+            case GameData.GameStatus.OnlinePhoton:
+                return _onlinePhoton;
+
+            case GameData.GameStatus.HasPinCodePanel:
+                return _hasPinCodePanel;
+            default:
+                return false;
+        }
+    }
+
+    public string GamePinCode()
+    {
+        return _pinCode.ToString();
+    }
+
+    public byte MaximumTeams() 
+    {
+        return _maxTeams;
+    }
     void Update()
     {
         //TODO

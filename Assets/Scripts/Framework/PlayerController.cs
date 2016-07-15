@@ -4,5 +4,5 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
     [SerializeField]
-    private GameData.TeamCountry myTeam;
+    private GameData.TeamCountry _myTeam;
 }

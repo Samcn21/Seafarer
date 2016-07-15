@@ -14,6 +14,14 @@ public class GameData
         Report
     }
 
+    public enum GameStatus
+    { 
+        UsingGPS,
+        ConnectingAdminPanel,
+        OnlinePhoton,
+        HasPinCodePanel
+    }
+
     public enum InternalEventType
     {
         GAME_INIT,

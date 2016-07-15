@@ -12,20 +12,30 @@ namespace Assets.Scripts.States
         {
             StateManager = managerRef;
             StateManager.CurrentActiveState = GameData.GameStates.PinCode;
-            GUIManager.Instance.PanelPinCode.ShowPanel();
         }
 
         public void StateUpdate()
         {
+            //Asking pin code in the beginning?
+            if (GameManager.Instance.GameStatus(GameData.GameStatus.HasPinCodePanel))
+            {
+                GUIManager.Instance.PanelPinCode.ShowPanel();
+            }
+            else
+            {
+                StateManager.PreActiveState = GameData.GameStates.PinCode;
+                StateManager.SwitchState(new ReadyState(StateManager));
+            }
 
-        }
-
-        public void StateShowGUI()
-        {
             if (GUIManager.Instance.PanelPinCode.canCheckPinCode)
             {
                 CheckPinCode();
             }
+        }
+
+        public void StateShowGUI()
+        {
+
         }
 
         public void StateFixedUpdate() 
@@ -35,7 +45,7 @@ namespace Assets.Scripts.States
 
         private bool IsPinCodeCorrect(string value)
         {
-            if (value == GameManager.Instance.pinCode)
+            if (value == GameManager.Instance.GamePinCode())
             {
                 return true;
             }
@@ -47,7 +57,7 @@ namespace Assets.Scripts.States
 
         private void CheckPinCode() 
         {
-            if (!GameManager.Instance.connectingAdminPanel)
+            if (!GameManager.Instance.GameStatus(GameData.GameStatus.ConnectingAdminPanel))
             {
                 if (IsPinCodeCorrect(GUIManager.Instance.PanelPinCode.inputPinCode.text.ToString()))
                 {

@@ -49,15 +49,20 @@ public class StateManager : MonoBehaviour
         }
     }
 
-    public void StateFixedUpdate()
+    void FixedUpdate()
     {
         if (activeState != null)
         {
-            activeState.StateShowGUI();
+            activeState.StateFixedUpdate();
         }
     }
 
     public void SwitchState(IStateBase newState) {
         activeState = newState;
+    }
+
+    public string PrintActiveState()
+    {
+       return activeState.ToString();
     }
 }

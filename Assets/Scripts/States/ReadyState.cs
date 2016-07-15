@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts.Interfaces;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.States
 {
@@ -12,19 +13,32 @@ namespace Assets.Scripts.States
         {
             StateManager = managerRef;
             StateManager.CurrentActiveState = GameData.GameStates.Ready;
-        }
-        public void StateUpdate()
-        {
 
         }
+
+        public void StateUpdate()
+        {
+            if (GameManager.Instance.GameStatus(GameData.GameStatus.OnlinePhoton))
+            {
+                if (!NetworkManager.Instance.IsConnected())
+                {
+                    NetworkManager.Instance.Connect();
+                }
+            }
+            else
+            {
+                NetworkManager.Instance.OfflineMode();
+            }
+        }
+
         public void StateShowGUI()
         {
 
         }
 
-        public void StateFixedUpdate() 
-        { 
-        
+        public void StateFixedUpdate()
+        {
+
         }
 
     }

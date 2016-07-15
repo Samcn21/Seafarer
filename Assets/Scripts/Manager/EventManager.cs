@@ -34,7 +34,7 @@ public class EventManager : MonoBehaviour
 		if(instance == null)
 		{
 			instance = this;
-			DontDestroyOnLoad(gameObject); //Prevent object from being destroyed on scene exit
+            DontDestroyOnLoad(gameObject.transform.parent); //Prevent object from being destroyed on scene exit
 		}
 		else //Instance already exists, so destroy this one. This should be a singleton object
 			DestroyImmediate(this);
