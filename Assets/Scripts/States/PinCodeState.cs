@@ -12,7 +12,7 @@ namespace Assets.Scripts.States
         {
             StateManager = managerRef;
             StateManager.CurrentActiveState = GameData.GameStates.PinCode;
-            GameManager.Instance.GUIManager.ShowPinCodePanel();
+            GUIManager.Instance.PanelPinCode.ShowPanel();
         }
 
         public void StateUpdate()
@@ -22,7 +22,7 @@ namespace Assets.Scripts.States
 
         public void StateShowGUI()
         {
-            if (GameManager.Instance.GUIManager.canCheckPinCode)
+            if (GUIManager.Instance.PanelPinCode.canCheckPinCode)
             {
                 CheckPinCode();
             }
@@ -49,17 +49,17 @@ namespace Assets.Scripts.States
         {
             if (!GameManager.Instance.connectingAdminPanel)
             {
-                if (IsPinCodeCorrect(GameManager.Instance.GUIManager.inputPinCode.text.ToString()))
+                if (IsPinCodeCorrect(GUIManager.Instance.PanelPinCode.inputPinCode.text.ToString()))
                 {
                     //when the pin code is correct the pincode panel must be hidden
-                    GameManager.Instance.GUIManager.HidePinCodePanel();
+                    GUIManager.Instance.PanelPinCode.HidePanel();
 
                     StateManager.PreActiveState = GameData.GameStates.PinCode;
                     StateManager.SwitchState(new ReadyState(StateManager));
                 }
                 else
                 {
-                    GameManager.Instance.GUIManager.EnterPinCodeAgain();
+                    GUIManager.Instance.PanelPinCode.EnterPinCodeAgain();
                 }
             }
             else

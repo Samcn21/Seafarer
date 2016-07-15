@@ -12,10 +12,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //reference to other classes
-    public StateManager StateManager;
-    public GUIManager GUIManager;
-
     //Technical options
     public bool usingGPS = false;
     public bool connectingAdminPanel = false;
@@ -50,8 +46,11 @@ public class GameManager : MonoBehaviour
     private int scrWidth;
     [SerializeField]
     private float aspectRatio;
-
     public Camera mainCamera;
+
+    //Game Objects in the scene
+    public GameObject[] allPlayers;
+    public GameObject[] allCities;
 
     void Awake()
     {
@@ -67,8 +66,6 @@ public class GameManager : MonoBehaviour
         {
             minTeams = 1;
         }
-
-
     }
 
     void Start() 

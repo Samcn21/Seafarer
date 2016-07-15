@@ -2,68 +2,60 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class GUIManager : MonoBehaviour {
-
-    public GameObject panelPinCode;
-    public InputField inputPinCode;
-    public Text pinCodeMsg;
-    public Button btnPinCodeEnter;
-    public bool canCheckPinCode { get; private set; }
-
-    void Awake()
+public class GUIManager : MonoBehaviour
+{
+    private static GUIManager instance = null;
+    public static GUIManager Instance
     {
-        if (!panelPinCode) 
-            Debug.LogError("PanelPinCode is not found!");
-        
-        if (!inputPinCode) 
-            Debug.LogError("InputFieldPinCode is not found!");
-        
-        if (!pinCodeMsg) 
-            Debug.LogError("TextPinCodeMessage is not found!");
-
-        if (!btnPinCodeEnter)
-            Debug.LogError("ButtonPinCode is not found!");
-
-    }
-
-
-    public void ReadInputPinCode()
-    {
-        pinCodeMsg.text = "";
-
-        if (inputPinCode.text.Length == 0)
+        get
         {
-            pinCodeMsg.text = "Please enter the pin code";
-        }
-        else if (inputPinCode.text.Length < 4)
-        {
-            pinCodeMsg.text = "It is a 4-digit pin code";
-        }
-        else
-        {
-            canCheckPinCode = true;
-            inputPinCode.interactable = false;
-            btnPinCodeEnter.interactable = false;
-            pinCodeMsg.text = "Please wait...";
+            return instance;
         }
     }
 
-    //if the pin code is incorrect!
-    public void EnterPinCodeAgain() 
+    //Script Refrences
+    public PanelPinCode PanelPinCode;
+
+    //Controller variables
+    [SerializeField]
+    private bool showAllPanel = false; //Demo
+
+    [SerializeField]
+    private GameObject[] allPanels;
+
+    public void Awake()
     {
-        pinCodeMsg.text = "The Pin Code is incorrect, Please enter again";
-        canCheckPinCode = false;
-        inputPinCode.interactable = true;
-        btnPinCodeEnter.interactable = true;
+        if (instance)
+        {
+            DestroyImmediate(this);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject.transform.parent);
+
+        if (!PanelPinCode)
+            Debug.LogError("PanelPinCode not found");
     }
 
-    public void ShowPinCodePanel() 
+    void Start()
     {
-        panelPinCode.GetComponent<CanvasGroup>().alpha = 1;
+        allPanels = GameObject.FindGameObjectsWithTag("Panel");
     }
 
-    public void HidePinCodePanel()
+
+    public void ShowAllPanels()
     {
-        panelPinCode.GetComponent<CanvasGroup>().alpha = 0;
+        foreach (GameObject panel in allPanels)
+        {
+            panel.GetComponent<CanvasGroup>().alpha = 1;
+        }
+    }
+
+    public void HideAllPanels()
+    {
+        foreach (GameObject panel in allPanels)
+        {
+            panel.GetComponent<CanvasGroup>().alpha = 0;
+        }
     }
 }

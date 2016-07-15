@@ -7,10 +7,15 @@ namespace Assets.Scripts.States
     public class PlayState : IStateBase
     {
         private StateManager StateManager;
-        //this method is constructive and works like Start() in unity method
+        private GameObject[] allPlayers;
+
         public PlayState(StateManager managerRef)
         {
             StateManager = managerRef;
+            
+
+            allPlayers = GameObject.FindGameObjectsWithTag("Player");
+            GameManager.Instance.allPlayers = allPlayers;
         }
         public void StateUpdate()
         {
