@@ -14,7 +14,7 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
     public Button btnSpain;
     public Button btnVenice;
 
-    public GameObject[] allButtons;
+    public GameObject[] allCountryButtons;
     void Awake()
     {
         if (!panelSelectCountry)
@@ -22,7 +22,7 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
     }
     void Start() 
     {
-        allButtons = GameObject.FindGameObjectsWithTag("CountryButton"); 
+        allCountryButtons = GameObject.FindGameObjectsWithTag("CountryButton"); 
     }
 
     public void ShowPanel()
@@ -37,6 +37,18 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
 
     public void ChosenCountry(string team) 
     {
+        foreach (GameObject button in allCountryButtons)
+        {
+            if (button.GetComponent<Button>().name.ToString() != team)
+            {
+                button.SetActive(false);
+                //TODO country chosen and need to send to the network nobody else shouldn't be able to take this
+            }
+            else
+            {
+                button.GetComponent<Button>().interactable = false;
+            }
+        }
         //Debug.Log(team.ToString());
     }
 }
