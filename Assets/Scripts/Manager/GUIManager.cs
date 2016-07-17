@@ -17,6 +17,8 @@ public class GUIManager : MonoBehaviour
     public PanelPinCode PanelPinCode;
     public PanelConnectionStatus PanelConnectionStatus;
     public PanelSelectCountry PanelSelectCountry;
+    public PanelReady PanelReady;
+
 
     //Controller variables
     [SerializeField]

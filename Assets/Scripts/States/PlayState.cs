@@ -12,8 +12,7 @@ namespace Assets.Scripts.States
         public PlayState(StateManager managerRef)
         {
             StateManager = managerRef;
-            
-
+            StateManager.CurrentActiveState = GameData.GameStates.Play;
             allPlayers = GameObject.FindGameObjectsWithTag("Player");
             GameManager.Instance.allPlayers = allPlayers;
         }

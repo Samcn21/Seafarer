@@ -59,10 +59,12 @@ public class PanelPinCode : MonoBehaviour, IPanelControl
     public void ShowPanel()
     {
         panelPinCode.GetComponent<CanvasGroup>().alpha = 1;
+        panelPinCode.GetComponent<CanvasGroup>().interactable = true;
     }
 
     public void HidePanel()
     {
         panelPinCode.GetComponent<CanvasGroup>().alpha = 0;
+        panelPinCode.GetComponent<CanvasGroup>().interactable = false;
     }
 }

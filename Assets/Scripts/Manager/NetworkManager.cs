@@ -21,7 +21,11 @@ public class NetworkManager : Photon.MonoBehaviour
     private string _buildVersion = "";
     private bool _connectInUpdate = false;
 
+    //[SerializeField]
+    private bool _joinedRoom = false;
+
     public InternetConnection InternetConnection;
+    public Instantiate Instantiate;
 
     void Awake()
     {
@@ -62,7 +66,7 @@ public class NetworkManager : Photon.MonoBehaviour
     {
         if (PhotonNetwork.connectionStateDetailed.ToString() == "Joined")
         {
-            GUIManager.Instance.PanelConnectionStatus.networkStatus.text = "Network Status: " + PhotonNetwork.connectionStateDetailed.ToString() + " to room " + GameManager.Instance.GamePinCode();
+            GUIManager.Instance.PanelConnectionStatus.networkStatus.text = "Network Status: " + PhotonNetwork.connectionStateDetailed.ToString() + " to room " + GameManager.Instance.GetGamePinCode();
         }
         else
         {
@@ -101,13 +105,13 @@ public class NetworkManager : Photon.MonoBehaviour
     public virtual void OnConnectedToMaster()
     {
         //Debug.Log("OnConnectedToMaster: Now we are connected, try to join the room number (pin code): " + GameManager.Instance.GamePinCode());
-        PhotonNetwork.JoinRoom(GameManager.Instance.GamePinCode());
+        PhotonNetwork.JoinRoom(GameManager.Instance.GetGamePinCode());
     }
 
     public virtual void OnPhotonJoinRoomFailed()
     {
         //Debug.Log("OnPhotonJoinRoomFailed: Means there is no room called: " + GameManager.Instance.GamePinCode() + " Trying to create and join it");
-        PhotonNetwork.CreateRoom(GameManager.Instance.GamePinCode(), new RoomOptions() { maxPlayers = GameManager.Instance.MaximumTeams() }, null);
+        PhotonNetwork.CreateRoom(GameManager.Instance.GetGamePinCode(), new RoomOptions() { maxPlayers = GameManager.Instance.GetMaximumTeams() }, null);
     }
 
     public virtual void OnFailedToConnectToPhoton(DisconnectCause cause)
@@ -117,6 +121,31 @@ public class NetworkManager : Photon.MonoBehaviour
 
     public void OnJoinedRoom()
     {
-        //Debug.Log("OnJoinedRoom: the room we joined called: " + PhotonNetwork.room.name.ToString()) ;
+        _joinedRoom = true;
+    }
+
+    public bool IsJoinedRoom()
+    {
+        if (_joinedRoom)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    //check if minimum number of players satisfies the game starting
+    public bool IsMinimumTeamsValid()
+    {
+        if (GameManager.Instance.GetMinimumTeams() <= NetworkManager.Instance.Instantiate.CountOfInstances())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

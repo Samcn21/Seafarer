@@ -28,10 +28,12 @@ public class PanelConnectionStatus : MonoBehaviour, IPanelControl
     public void ShowPanel()
     {
         panelConnectionStatus.GetComponent<CanvasGroup>().alpha = 1;
+        panelConnectionStatus.GetComponent<CanvasGroup>().interactable = true;
     }
 
     public void HidePanel()
     {
         panelConnectionStatus.GetComponent<CanvasGroup>().alpha = 0;
+        panelConnectionStatus.GetComponent<CanvasGroup>().interactable = false;
     }
 }

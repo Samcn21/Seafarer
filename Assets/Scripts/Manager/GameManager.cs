@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private bool _hasPinCodePanel = true;
 
+    //References
+    public PlayerController PlayerController;
+
     //Gameplay Status
     [SerializeField]
     private string _pinCode = "1234";
@@ -52,12 +55,20 @@ public class GameManager : MonoBehaviour
     private int _screenWidth;
     [SerializeField]
     private float _aspectRatio;
+    private float _currentCameraSize;
+    [SerializeField]
+    private float _minCameraSize = 11.2f;
+    [SerializeField]
+    private float _maxCameraSize = 15f;
     public Camera mainCamera;
 
     //Game Objects in the scene
+    [SerializeField]
+    private float _playerSpeed;
     public GameObject[] allPlayers;
     public GameObject[] allCities;
 
+   
     void Awake()
     {
         
@@ -83,16 +94,19 @@ public class GameManager : MonoBehaviour
 
         if (_aspectRatio < 0.7f)
         {
-            mainCamera.orthographicSize = 11.2f;
+            mainCamera.orthographicSize = _minCameraSize;
+            _currentCameraSize = _minCameraSize;
         }
         else 
         {
-            mainCamera.orthographicSize = 15f;
+            mainCamera.orthographicSize = _maxCameraSize;
+            _currentCameraSize = _maxCameraSize;
         }
+
 
     }
 
-    public bool GameStatus(GameData.GameStatus status)
+    public bool GetGameStatus(GameData.GameStatus status)
     { 
         switch (status)
         {
@@ -107,20 +121,37 @@ public class GameManager : MonoBehaviour
 
             case GameData.GameStatus.HasPinCodePanel:
                 return _hasPinCodePanel;
+
             default:
                 return false;
         }
     }
 
-    public string GamePinCode()
+    public string GetGamePinCode()
     {
         return _pinCode.ToString();
     }
 
-    public byte MaximumTeams() 
+    public byte GetMaximumTeams() 
     {
         return _maxTeams;
     }
+
+    public byte GetMinimumTeams()
+    {
+        return _minTeams;
+    }
+
+    public float GetCurrentCameraSize() 
+    {
+        return _currentCameraSize;
+    }
+
+    public float GetPlayerSpeed ()
+    {
+        return _playerSpeed;
+    }
+
     void Update()
     {
         //TODO

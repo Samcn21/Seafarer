@@ -17,7 +17,7 @@ namespace Assets.Scripts.States
         public void StateUpdate()
         {
             //Asking pin code in the beginning?
-            if (GameManager.Instance.GameStatus(GameData.GameStatus.HasPinCodePanel))
+            if (GameManager.Instance.GetGameStatus(GameData.GameStatus.HasPinCodePanel))
             {
                 GUIManager.Instance.PanelPinCode.ShowPanel();
             }
@@ -45,7 +45,7 @@ namespace Assets.Scripts.States
 
         private bool IsPinCodeCorrect(string value)
         {
-            if (value == GameManager.Instance.GamePinCode())
+            if (value == GameManager.Instance.GetGamePinCode())
             {
                 return true;
             }
@@ -57,7 +57,7 @@ namespace Assets.Scripts.States
 
         private void CheckPinCode() 
         {
-            if (!GameManager.Instance.GameStatus(GameData.GameStatus.ConnectingAdminPanel))
+            if (!GameManager.Instance.GetGameStatus(GameData.GameStatus.ConnectingAdminPanel))
             {
                 if (IsPinCodeCorrect(GUIManager.Instance.PanelPinCode.inputPinCode.text.ToString()))
                 {

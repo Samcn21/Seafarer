@@ -18,7 +18,7 @@ namespace Assets.Scripts.States
 
         public void StateUpdate()
         {
-            if (GameManager.Instance.GameStatus(GameData.GameStatus.OnlinePhoton))
+            if (GameManager.Instance.GetGameStatus(GameData.GameStatus.OnlinePhoton))
             {
                 if (!NetworkManager.Instance.IsConnected())
                 {
@@ -29,6 +29,25 @@ namespace Assets.Scripts.States
             {
                 NetworkManager.Instance.OfflineMode();
             }
+
+            //check when joined a room
+            if (NetworkManager.Instance.IsJoinedRoom())
+                GUIManager.Instance.PanelSelectCountry.ShowPanel();
+
+            //Hide select country
+            if (NetworkManager.Instance.Instantiate.HasMyInstance())
+            {
+                GUIManager.Instance.PanelSelectCountry.HidePanel();
+            }
+
+            //switch to play state
+            if (GUIManager.Instance.PanelReady.CanPlayNow())
+            {
+                GUIManager.Instance.PanelReady.HidePanel();
+                StateManager.PreActiveState = GameData.GameStates.Ready;
+                StateManager.SwitchState(new PlayState(StateManager));
+            }
+
         }
 
         public void StateShowGUI()

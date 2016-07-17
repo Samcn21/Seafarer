@@ -176,8 +176,8 @@ namespace TouchScript.Behaviors.Visualizer
                 var touch = e.Touches[i];
                 var proxy = pool.Get();
                 proxy.Size = getTouchSize();
-                proxy.ShowTouchId = showTouchId;
-                proxy.ShowTags = showTags;
+                //proxy.ShowTouchId = showTouchId;
+                //proxy.ShowTags = showTags;
                 proxy.Init(rect, touch);
                 proxies.Add(touch.Id, proxy);
             }
