@@ -22,7 +22,7 @@ namespace Assets.Scripts.States
             }
         }
 
-        public void ShowIt()
+        public void StateShowGUI()
         {
 
         }
