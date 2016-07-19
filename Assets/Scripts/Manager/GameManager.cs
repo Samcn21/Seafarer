@@ -57,9 +57,9 @@ public class GameManager : MonoBehaviour
     private float _aspectRatio;
     private float _currentCameraSize;
     [SerializeField]
-    private float _minCameraSize = 11.2f;
+    private float _minCameraSize = 45f;
     [SerializeField]
-    private float _maxCameraSize = 15f;
+    private float _maxCameraSize = 45f;
     public Camera mainCamera;
 
     //Game Objects in the scene

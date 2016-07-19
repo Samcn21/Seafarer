@@ -4,23 +4,19 @@ using Assets.Scripts.Interfaces;
 
 namespace Assets.Scripts.States
 {
-    public class PlayState : IStateBase
+    public class ReportState : IStateBase
     {
         private StateManager StateManager;
-        private GameObject[] allPlayers;
-
-        public PlayState(StateManager managerRef)
+        public ReportState(StateManager managerRef)
         {
             StateManager = managerRef;
-            StateManager.CurrentActiveState = GameData.GameStates.Play;
-            allPlayers = GameObject.FindGameObjectsWithTag("Player");
-            GameManager.Instance.allPlayers = allPlayers;
         }
         public void StateUpdate()
         {
-            //    //StateManager.SwitchState(new PlayState(StateManager));
-        }
 
+            //    //StateManager.SwitchState(new PlayState(StateManager));
+
+        }
         public void StateShowGUI()
         {
 

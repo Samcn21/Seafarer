@@ -27,6 +27,9 @@ public class Instantiate : MonoBehaviour {
             GameObject mySpawnSpot = _allRespawnSpots[Random.Range(0, _allRespawnSpots.Length)];
             GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(chosenCountry.ToString(), mySpawnSpot.gameObject.transform.position, Quaternion.identity, 0);
             ((MonoBehaviour)myPlayer.GetComponent("PlayerController")).enabled = true;
+            ((MonoBehaviour)myPlayer.GetComponent("InputController")).enabled = true;
+
+            //if we use camera zoom in/out or 3D
             //myPlayer.transform.FindChild("Main Camera").gameObject.SetActive(true);
 
             //we can also calculate by chosen countries in panel select country or number of players in the scene through game manager

@@ -55,6 +55,12 @@ public class GameData
         Venice
     }
 
+    public enum HitTarget 
+    {
+        Me,
+        Opponent,
+        City
+    }
     public static Dictionary<TeamCountry, TeamCapital> TeamCC = new Dictionary<TeamCountry, TeamCapital>() 
         {
             {TeamCountry.Denmark,   TeamCapital.Copenhagen  },

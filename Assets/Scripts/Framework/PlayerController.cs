@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             _isTouchMovement = true;
-            _speed = GameManager.Instance.GetPlayerSpeed() / 100;
+            _speed = GameManager.Instance.GetPlayerSpeed();
         }
 
     }
@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
-            this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed);
+            this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
             this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
         }
     }
