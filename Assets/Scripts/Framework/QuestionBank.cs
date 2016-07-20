@@ -155,6 +155,7 @@ public class QuestionBank : MonoBehaviour
                 //3. substract the summary of asked questions from question bank;
                 //4. the result will be questions that never been asked from the country and its alliance if they have
                 //5. find a random question from the refined list 
+                //6. if there is no new question, give one of the olds randomly
             }
         }
 

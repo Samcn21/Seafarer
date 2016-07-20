@@ -4,8 +4,8 @@ using TouchScript;
 
 public class InputController : MonoBehaviour
 {
-    public Vector3 _clickedPosition;
-    public Vector2 _screenPosition;
+    private Vector3 _clickedPosition;
+    private Vector2 _screenPosition;
 
     private void OnEnable()
     {

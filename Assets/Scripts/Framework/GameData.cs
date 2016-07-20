@@ -61,6 +61,25 @@ public class GameData
         Opponent,
         City
     }
+
+    public enum TeamPlayMode
+    { 
+        Exploring,
+        Attacking
+    }
+
+    public enum City
+    {
+        Paris,
+        London,
+        Amsterdam,
+        Copenhagen,
+        Venice,
+        Esfahan,
+        Fes,
+        Tokyo
+    }
+
     public static Dictionary<TeamCountry, TeamCapital> TeamCC = new Dictionary<TeamCountry, TeamCapital>() 
         {
             {TeamCountry.Denmark,   TeamCapital.Copenhagen  },

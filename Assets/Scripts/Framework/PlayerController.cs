@@ -1,11 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using TouchScript;
 
+[System.Serializable]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private GameData.TeamCountry _myTeam;
+
+    [SerializeField]
+    private GameData.TeamPlayMode _myPlayMode = GameData.TeamPlayMode.Exploring;
+
+    [SerializeField]
+    private int _myTotalPoints = 0;
+
+    [SerializeField]
+    private bool _isAlone;
+
+    [SerializeField]
+    private List<GameData.TeamCountry> _allies;
+
+    [SerializeField]
+    private List<GameData.City> _capturedCitiesAlone;
+
+    [SerializeField]
+    private List<GameData.City> _capturedCitiesAlly;
+
+    [SerializeField]
+    private int[] _questionsTotal;
+
+    [SerializeField]
+    private int[] _questionsTrue;
+
+
+
 
     public bool _isTouchMovement { get; private set; }
 
@@ -14,9 +43,6 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float _speed = 100;
-
-    [SerializeField]
-    private float _actionRange;
 
     void Start()
     {
@@ -30,7 +56,9 @@ public class PlayerController : MonoBehaviour
             _speed = GameManager.Instance.GetPlayerSpeed();
         }
 
-        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetPlayerActionRange();
+        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
+
+        Debug.Log(FindCurrentAlly());
     }
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
@@ -42,10 +70,22 @@ public class PlayerController : MonoBehaviour
         return _myTeam;
     }
 
-    //returns the questions that have been asked from this team
-    public int[] GetMyQuestions(GameData.TeamCountry team) 
+    public GameData.TeamCountry FindCurrentAlly()
     {
-        return new int[] { 1, 2, 5, 10 };
+        if (_allies.Count - 1 <= 0)
+        {
+            return _myTeam;
+        }
+        else 
+        { 
+            return _allies[_allies.Count - 1];
+        }
+    }
+
+    //returns the questions that have been asked from this team
+    public int[] GetTotalQuestions(GameData.TeamCountry team) 
+    {
+        return _questionsTotal;
     }
 
     private void OnEnable()
