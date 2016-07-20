@@ -3,6 +3,9 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    //References
+    public QuestionBank QuestionBank;
+
     private static GameManager _instance = null;
     public static GameManager Instance
     {
@@ -22,8 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private bool _hasPinCodePanel = true;
 
-    //References
-    public PlayerController PlayerController;
+
 
     //Gameplay Status
     [SerializeField]
@@ -65,6 +67,12 @@ public class GameManager : MonoBehaviour
     //Game Objects in the scene
     [SerializeField]
     private float _playerSpeed;
+
+    [SerializeField]
+    private float _playerActionRange;
+    [SerializeField]
+    private float _cityActionRange;
+
     public GameObject[] allPlayers;
     public GameObject[] allCities;
 
@@ -102,8 +110,6 @@ public class GameManager : MonoBehaviour
             mainCamera.orthographicSize = _maxCameraSize;
             _currentCameraSize = _maxCameraSize;
         }
-
-
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
@@ -151,6 +157,24 @@ public class GameManager : MonoBehaviour
     {
         return _playerSpeed;
     }
+
+    public float GetPlayerActionRange()
+    { 
+        //TODO:
+        //this action range must be based on calculation of physical world then convert to 
+        //player's sphiere collider radius
+
+        return _playerActionRange;
+    }
+
+    public float GetCityActionRange()
+    { 
+        //TODO: 
+        //this action range can be based on area or based on screen size (cities need to be interactive and touchable)
+
+        return _cityActionRange;
+    }                                    
+
 
     void Update()
     {

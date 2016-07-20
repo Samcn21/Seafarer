@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float _speed = 100;
 
+    [SerializeField]
+    private float _actionRange;
+
     void Start()
     {
         if (GameManager.Instance.GetGameStatus(GameData.GameStatus.UsingGPS))
@@ -27,10 +30,22 @@ public class PlayerController : MonoBehaviour
             _speed = GameManager.Instance.GetPlayerSpeed();
         }
 
+        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetPlayerActionRange();
     }
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
         _myTeam = team;
+    }
+
+    public GameData.TeamCountry GetMyTeam()
+    {
+        return _myTeam;
+    }
+
+    //returns the questions that have been asked from this team
+    public int[] GetMyQuestions(GameData.TeamCountry team) 
+    {
+        return new int[] { 1, 2, 5, 10 };
     }
 
     private void OnEnable()

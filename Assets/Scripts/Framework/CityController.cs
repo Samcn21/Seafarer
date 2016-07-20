@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CityController : MonoBehaviour {
+public class CityController : MonoBehaviour 
+{
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+    [SerializeField]
+    private float _cityActionRange;
+	void Start () 
+    {
+        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
 	}
 }
