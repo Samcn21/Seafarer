@@ -110,6 +110,16 @@ public class GameManager : MonoBehaviour
             mainCamera.orthographicSize = _maxCameraSize;
             _currentCameraSize = _maxCameraSize;
         }
+
+        allCities = GameObject.FindGameObjectsWithTag("City");
+
+        //string allnames = "";
+        //foreach (GameObject city in allCities)
+        //{ 
+        //    allnames += city.name.ToString() + " ";
+        //}
+
+        //Debug.Log(allnames);
     }
 
     public bool GetGameStatus(GameData.GameStatus status)

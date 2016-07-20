@@ -76,14 +76,14 @@ public class PlayerController : MonoBehaviour
         {
             return _myTeam;
         }
-        else 
-        { 
+        else
+        {
             return _allies[_allies.Count - 1];
         }
     }
 
     //returns the questions that have been asked from this team
-    public int[] GetTotalQuestions(GameData.TeamCountry team) 
+    public int[] GetTotalQuestions(GameData.TeamCountry team)
     {
         return _questionsTotal;
     }
@@ -117,8 +117,11 @@ public class PlayerController : MonoBehaviour
     {
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
-            this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
-            this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
+            if (Vector3.Distance(_nextPosition, transform.position) < 70)
+            {
+                this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
+                this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ public class GameData
     }
 
     public enum GameStatus
-    { 
+    {
         UsingGPS,
         ConnectingAdminPanel,
         OnlinePhoton,
@@ -33,6 +33,7 @@ public class GameData
 
     public enum TeamCountry
     {
+        ___,
         Denmark,
         England,
         France,
@@ -43,19 +44,7 @@ public class GameData
         Venice
     }
 
-    public enum TeamCapital
-    {
-        Copenhagen,
-        London,
-        Paris,
-        Berlin,
-        Amsterdam,
-        Lisbon,
-        Madrid,
-        Venice
-    }
-
-    public enum HitTarget 
+    public enum HitTarget
     {
         Me,
         Opponent,
@@ -63,33 +52,73 @@ public class GameData
     }
 
     public enum TeamPlayMode
-    { 
+    {
         Exploring,
         Attacking
     }
 
     public enum City
     {
-        Paris,
-        London,
         Amsterdam,
+        Berlin,
+        Cario,
         Copenhagen,
-        Venice,
         Esfahan,
         Fes,
-        Tokyo
+        Istanbul,
+        Lisbon,
+        London,
+        Madrid,
+        MexicoCity,
+        Paris,
+        Seville,
+        Tokyo,
+        Venice
     }
 
-    public static Dictionary<TeamCountry, TeamCapital> TeamCC = new Dictionary<TeamCountry, TeamCapital>() 
+    public enum CityStatus
+    { 
+        Neutral, 
+        OccupiedByOneCountry, 
+        OccupiedByAllies
+    }
+
+    public enum Continent
+    {
+        Africa,
+        Asia,
+        Australia,
+        Europe,
+        NorthAmerica,
+        SouthAmerica
+    }
+
+    public enum DefenceStatus 
+    {
+        Free,
+        UnderSiege,
+        UnderAttack
+    }
+
+    public enum CitySet
+    { 
+        World25,
+        World40,
+        Europe25,
+        Europe32,
+        Asia20
+    }
+
+    public static Dictionary<TeamCountry, City> TeamCC = new Dictionary<TeamCountry, City>() 
         {
-            {TeamCountry.Denmark,   TeamCapital.Copenhagen  },
-            {TeamCountry.England,   TeamCapital.London      },
-            {TeamCountry.France,    TeamCapital.Paris       },
-            {TeamCountry.Germany,   TeamCapital.Berlin      },
-            {TeamCountry.Holland,   TeamCapital.Amsterdam   },
-            {TeamCountry.Portugal,  TeamCapital.Lisbon      },
-            {TeamCountry.Spain,     TeamCapital.Madrid      },
-            {TeamCountry.Venice,    TeamCapital.Venice      }
+            {TeamCountry.Denmark,   City.Copenhagen  },
+            {TeamCountry.England,   City.London      },
+            {TeamCountry.France,    City.Paris       },
+            {TeamCountry.Germany,   City.Berlin      },
+            {TeamCountry.Holland,   City.Amsterdam   },
+            {TeamCountry.Portugal,  City.Lisbon      },
+            {TeamCountry.Spain,     City.Madrid      },
+            {TeamCountry.Venice,    City.Venice      }
         };
     /*
     public enum Team 
