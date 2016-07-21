@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+[System.Serializable]
 public class GameManager : MonoBehaviour
 {
     //References
@@ -69,6 +71,9 @@ public class GameManager : MonoBehaviour
     private float _playerSpeed;
 
     [SerializeField]
+    private bool _canPlayerInteract = true;
+
+    [SerializeField]
     private float _playerActionRange;
     [SerializeField]
     private float _cityActionRange;
@@ -76,7 +81,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] allPlayers;
     public GameObject[] allCities;
 
-   
+ 
     void Awake()
     {
         
@@ -166,6 +171,16 @@ public class GameManager : MonoBehaviour
     public float GetPlayerSpeed ()
     {
         return _playerSpeed;
+    }
+
+    public bool CanPlayerInteract() 
+    {
+        return _canPlayerInteract;
+    }
+
+    public void SetPlayerInteract(bool value)
+    {
+        _canPlayerInteract = value;
     }
 
     public float GetPlayerActionRange()

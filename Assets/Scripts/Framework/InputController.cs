@@ -7,6 +7,13 @@ public class InputController : MonoBehaviour
     private Vector3 _clickedPosition;
     private Vector2 _screenPosition;
 
+    [SerializeField]
+    private bool _canPlayerMove = true;
+
+    void Start() 
+    {
+        _canPlayerMove = true;
+    }
     private void OnEnable()
     {
         if (TouchManager.Instance != null)
@@ -35,15 +42,18 @@ public class InputController : MonoBehaviour
             
             if (_hitTransform != null)
             {
-            //    //We clicked on something either city or player
-            //    //TODO: 
-            //    //We need to do something
-                if (_hitTransform.tag == "City") // and the city is in acceptable radius
+                if (_hitTransform.tag == "City")
                 {
-                    GUIManager.Instance.PanelCity.OpenPanel(_hitTransform.name);
-                    //GUIManager.Instance.PanelCity.Op
-                    //GUIManager.Instance.PanelCity.
+                    //check if the hit city is in player's action range
+                    if (this.GetComponent<PlayerController>().CitiesInActionRange().Contains(_hitTransform.gameObject.GetComponent<CityController>().GetCityName()))
+                    {
+                        GUIManager.Instance.PanelCity.OpenPanel(_hitTransform.gameObject.GetComponent<CityController>().GetCityName(), this.GetComponent<PlayerController>().GetMyTeam());
+                    }
                 }
+                //else
+                //{
+                //    _canPlayerMove = true;
+                //}
             }
         }
     }
@@ -69,5 +79,10 @@ public class InputController : MonoBehaviour
     {
         //Seeing the raycast
         Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(_clickedPosition), Color.red);
+    }
+
+    public bool CanPlayerMove()
+    {
+        return _canPlayerMove;
     }
 }

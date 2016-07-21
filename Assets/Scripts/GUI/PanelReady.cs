@@ -34,12 +34,14 @@ public class PanelReady : MonoBehaviour, IPanelControl
     {
         panelReady.GetComponent<CanvasGroup>().alpha = 1;
         panelReady.GetComponent<CanvasGroup>().interactable = true;
+        GameManager.Instance.SetPlayerInteract(false);
     }
 
     public void HidePanel()
     {
         panelReady.GetComponent<CanvasGroup>().alpha = 0;
         panelReady.GetComponent<CanvasGroup>().interactable = false;
+        GameManager.Instance.SetPlayerInteract(true);
     }
 
     public void ShowPanelChosenCountry(GameData.TeamCountry team)

@@ -33,8 +33,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private int[] _questionsTrue;
 
+    [SerializeField]
+    private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
 
-
+    [SerializeField]
+    private List<GameData.City> _citiesInActionRange = new List<GameData.City>();
 
     public bool _isTouchMovement { get; private set; }
 
@@ -58,7 +61,7 @@ public class PlayerController : MonoBehaviour
 
         this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
 
-        Debug.Log(FindCurrentAlly());
+        //Debug.Log(FindCurrentAlly());
     }
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
@@ -117,11 +120,70 @@ public class PlayerController : MonoBehaviour
     {
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
-            if (Vector3.Distance(_nextPosition, transform.position) < 70)
+            if (Vector3.Distance(_nextPosition, transform.position) < 50 && GameManager.Instance.CanPlayerInteract())//&& this.GetComponent<InputController>().CanPlayerMove())
             {
                 this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
                 this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
             }
+            
         }
+    }
+
+    //A city or player comes to player's action range
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "City")
+        {
+            //check if the city is not already in the list, then add it.
+            if (!_citiesInActionRange.Contains(other.gameObject.GetComponent<CityController>().GetCityName()))
+            {
+                _citiesInActionRange.Add(other.gameObject.GetComponent<CityController>().GetCityName());
+            }
+        }
+        //is a player    
+        else
+        {
+            //check if the player is not already in the list, then add it.
+            if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                _playersInActionRange.Add(other.gameObject.GetComponent<PlayerController>().GetMyTeam());
+            }
+        }
+           
+        
+    }
+
+    //When a city exits player's action range
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "City")
+        {
+            //check if the City is not already in the list, then remove it
+            if (_citiesInActionRange.Contains(other.gameObject.GetComponent<CityController>().GetCityName()))
+            {
+                _citiesInActionRange.Remove(other.gameObject.GetComponent<CityController>().GetCityName());
+            }
+        }
+        //is a player
+        else
+        {
+            //check if the player is not already in the list, then remove it.
+            if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                _playersInActionRange.Remove(other.gameObject.GetComponent<PlayerController>().GetMyTeam());
+            }
+        }
+    }
+
+    //retrun cities in range
+    public List<GameData.City> CitiesInActionRange() 
+    {
+        return _citiesInActionRange;
+    }
+
+    //retrun players in range
+    public List<GameData.TeamCountry> PlayersInActionRange()
+    {
+        return _playersInActionRange;
     }
 }

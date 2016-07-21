@@ -9,6 +9,9 @@ public class QuestionBank : MonoBehaviour
     [SerializeField]
     private int _countOfQuestions;
 
+    [SerializeField]
+    private int[] _questionsInBank;
+
 	void Start () 
     {
         questionBank.Add(new List<string> 
@@ -111,24 +114,14 @@ public class QuestionBank : MonoBehaviour
             "C"
         });
 
-
-        foreach (List<string> question in questionBank)
-        {
-            //Debug.Log(question[0] == "5");
-            foreach (string item in question)
-            {
-                //Debug.Log(item);
-
-                if (item[0] == 1)
-                { 
-                    Debug.Log(item);
-                }
-            }
-        }
-
         //finds the number of questions in the question bank
         _countOfQuestions = questionBank.Count;
+        _questionsInBank = new int[_countOfQuestions];
 
+        for (int i = 0; i < _countOfQuestions; i++)
+        {
+            _questionsInBank[i] = i + 1;
+        }
 	}
 
     public int GetCountOfQuestion() 

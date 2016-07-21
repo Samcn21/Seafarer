@@ -33,9 +33,6 @@ public class CityController : MonoBehaviour
     [SerializeField]
     private float _pointsPerMinute = 2;
 
-
-
-
 	void Start () 
     {
         _defence = 1;
@@ -55,4 +52,30 @@ public class CityController : MonoBehaviour
         }
 
 	}
+
+    public GameData.City GetCityName() 
+    {
+        return _cityName;
+    }
+
+    public GameData.CityStatus GetCityStatus()
+    {
+        return _cityStatus;
+    }
+
+    public List<GameData.TeamCountry> GetCityOwners()
+    {
+        return _cityOwners;
+    }
+
+    public GameData.DefenceStatus GetCityDefenceStatus() 
+    {
+        return _defenceStatus;
+    }
+
+    [PunRPC]
+    public void SetCityStatus(GameData.DefenceStatus value)
+    {
+        _defenceStatus = value;
+    }
 }
