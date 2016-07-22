@@ -18,6 +18,8 @@ public class GUIManager : MonoBehaviour
     public PanelConnectionStatus PanelConnectionStatus;
     public PanelSelectCountry PanelSelectCountry;
     public PanelReady PanelReady;
+    public PanelCity PanelCity;
+    public PanelQuestion PanelQuestion;
 
 
     //Controller variables

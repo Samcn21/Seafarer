@@ -39,12 +39,14 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
     {
         panelSelectCountry.GetComponent<CanvasGroup>().alpha = 1;
         panelSelectCountry.GetComponent<CanvasGroup>().interactable = true;
+        GameManager.Instance.SetPlayerInteract(false);
     }
 
     public void HidePanel()
     {
         panelSelectCountry.GetComponent<CanvasGroup>().alpha = 0;
         panelSelectCountry.GetComponent<CanvasGroup>().interactable = false;
+        GameManager.Instance.SetPlayerInteract(true);
     }
 
     //this method is invoked only by Onclick() function on the country buttons in chosen country panel

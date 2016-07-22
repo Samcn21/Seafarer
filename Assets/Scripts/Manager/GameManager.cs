@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+[System.Serializable]
 public class GameManager : MonoBehaviour
 {
+    //References
+    public QuestionBank QuestionBank;
+
     private static GameManager _instance = null;
     public static GameManager Instance
     {
@@ -22,8 +27,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private bool _hasPinCodePanel = true;
 
-    //References
-    public PlayerController PlayerController;
+
 
     //Gameplay Status
     [SerializeField]
@@ -57,18 +61,27 @@ public class GameManager : MonoBehaviour
     private float _aspectRatio;
     private float _currentCameraSize;
     [SerializeField]
-    private float _minCameraSize = 11.2f;
+    private float _minCameraSize = 45f;
     [SerializeField]
-    private float _maxCameraSize = 15f;
+    private float _maxCameraSize = 45f;
     public Camera mainCamera;
 
     //Game Objects in the scene
     [SerializeField]
     private float _playerSpeed;
+
+    [SerializeField]
+    private bool _canPlayerInteract = true;
+
+    [SerializeField]
+    private float _playerActionRange;
+    [SerializeField]
+    private float _cityActionRange;
+
     public GameObject[] allPlayers;
     public GameObject[] allCities;
 
-   
+ 
     void Awake()
     {
         
@@ -103,7 +116,15 @@ public class GameManager : MonoBehaviour
             _currentCameraSize = _maxCameraSize;
         }
 
+        allCities = GameObject.FindGameObjectsWithTag("City");
 
+        //string allnames = "";
+        //foreach (GameObject city in allCities)
+        //{ 
+        //    allnames += city.name.ToString() + " ";
+        //}
+
+        //Debug.Log(allnames);
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
@@ -125,6 +146,13 @@ public class GameManager : MonoBehaviour
             default:
                 return false;
         }
+    }
+
+    [PunRPC]
+    public GameObject[] GetAllPlayers() 
+    {
+        allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        return allPlayers;
     }
 
     public string GetGamePinCode()
@@ -151,6 +179,34 @@ public class GameManager : MonoBehaviour
     {
         return _playerSpeed;
     }
+
+    public bool CanPlayerInteract() 
+    {
+        return _canPlayerInteract;
+    }
+
+    public void SetPlayerInteract(bool value)
+    {
+        _canPlayerInteract = value;
+    }
+
+    public float GetPlayerActionRange()
+    { 
+        //TODO:
+        //this action range must be based on calculation of physical world then convert to 
+        //player's sphiere collider radius
+
+        return _playerActionRange;
+    }
+
+    public float GetCityActionRange()
+    { 
+        //TODO: 
+        //this action range can be based on area or based on screen size (cities need to be interactive and touchable)
+
+        return _cityActionRange;
+    }                                    
+
 
     void Update()
     {
