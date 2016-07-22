@@ -148,6 +148,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public GameObject[] GetAllPlayers() 
+    {
+        allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        return allPlayers;
+    }
+
     public string GetGamePinCode()
     {
         return _pinCode.ToString();

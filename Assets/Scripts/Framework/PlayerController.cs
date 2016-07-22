@@ -28,10 +28,17 @@ public class PlayerController : MonoBehaviour
     private List<GameData.City> _capturedCitiesAlly;
 
     [SerializeField]
-    private int[] _questionsTotal;
+    private List<GameData.City> _capturedCitie;
+
+    //TODO: use this dictionary for adding cities that player cannot comeback for a couple of mins
+    [SerializeField]
+    private Dictionary<float, GameData.City> forbidenCities = new Dictionary<float, GameData.City>();
 
     [SerializeField]
-    private int[] _questionsTrue;
+    private List<int> _questionsTotal;
+
+    [SerializeField]
+    private List<int> _questionsTrue;
 
     [SerializeField]
     private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
@@ -59,7 +66,11 @@ public class PlayerController : MonoBehaviour
             _speed = GameManager.Instance.GetPlayerSpeed();
         }
 
+        //get the radius from game manager based on map size
         this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
+
+        //in the beginning the country is alone:
+        _isAlone = true;
 
         //Debug.Log(FindCurrentAlly());
     }
@@ -86,9 +97,14 @@ public class PlayerController : MonoBehaviour
     }
 
     //returns the questions that have been asked from this team
-    public int[] GetTotalQuestions(GameData.TeamCountry team)
+    public List<int> GetTotalQuestions(GameData.TeamCountry team)
     {
         return _questionsTotal;
+    }
+
+    public void AddToTotalQuestions(int questionNumber)
+    {
+        _questionsTotal.Add(questionNumber);
     }
 
     private void OnEnable()
@@ -185,5 +201,40 @@ public class PlayerController : MonoBehaviour
     public List<GameData.TeamCountry> PlayersInActionRange()
     {
         return _playersInActionRange;
+    }
+
+    public bool IsAlone() 
+    {
+        return _isAlone;
+    }
+
+
+    [PunRPC]
+    public void ChangePlayerSatatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer) 
+    {
+        if (isCorrectAnswer)
+        {
+            //add to captured city
+            _capturedCitie.Add(capturedCity);
+
+            //if captured the city alone
+            if (IsAlone())
+            {
+                _capturedCitiesAlone.Add(capturedCity);
+            }
+            //captured cities with allies
+            else
+            {
+                _capturedCitiesAlly.Add(capturedCity);
+            }
+
+            //add to answered questions
+            _questionsTrue.Add(questionTrue);
+
+        }
+        else
+        { 
+            //Nothing for now
+        }
     }
 }

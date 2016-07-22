@@ -70,9 +70,12 @@ public class PanelCity : MonoBehaviour, IPanelControl
                 {
                     //change city status to under attack in all network
                     city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderAttack);
+                    //TODO: change player status from exploring to attacking
 
                     //TODO (Singular attack):
                     //4.  HidePanel(); and open question panel
+                    GUIManager.Instance.PanelQuestion.OpenPanel(_askerCountry, _city);
+                    HidePanel();
                 }
             }
         }

@@ -78,4 +78,36 @@ public class CityController : MonoBehaviour
     {
         _defenceStatus = value;
     }
+
+    [PunRPC]
+    public void ChangeCityStatus(GameData.TeamCountry cityOwner, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus, bool isCorrectAnswer)
+    {
+        //if player answered to a question correctly
+        if (isCorrectAnswer)
+        {
+            //add the owners
+            _cityOwners.Add(cityOwner);
+
+            //TODO: Icannot send List<CityOwners> through PunRPC in question panel so I need to check players allies here then add the alies here
+
+            //not neutral anymore (occupied by one or allies contries)
+            _cityStatus = cityStatus;
+
+            //add to defence based on number of owners
+            //_defence = (cityOwners.Count > 1) ? 3 : 2;
+            _defence = 2;
+
+            //change defence status
+            _defenceStatus = defenceStatus;
+
+        }
+        else
+        { 
+            //TODO: add to forbiden country dictionary for a few minutes.
+
+            //change defence status
+            _defenceStatus = defenceStatus;
+        }
+
+    }
 }

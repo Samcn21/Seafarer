@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public class QuestionBank : MonoBehaviour 
@@ -11,6 +12,12 @@ public class QuestionBank : MonoBehaviour
 
     [SerializeField]
     private int[] _questionsInBank;
+
+    [SerializeField]
+    private int _randomQuestionNumber;
+
+    [SerializeField]
+    private List<int> _result;
 
 	void Start () 
     {
@@ -129,11 +136,8 @@ public class QuestionBank : MonoBehaviour
         return _countOfQuestions;
     }
 
-    public List<string> GetOneQuestion(GameData.TeamCountry country) 
+    public List<string> GetOneQuestion(GameData.TeamCountry country, out int _questionNumber) 
     {
-        // find a random number from 1 to the total number questions (for now)
-        int _randomQuestionNumber = Random.Range(1, GetCountOfQuestion() + 1);
-
         //finding the player (the country) that requested for a question betwwen all players
         foreach (GameObject player in GameManager.Instance.allPlayers)
         {
@@ -149,18 +153,64 @@ public class QuestionBank : MonoBehaviour
                 //4. the result will be questions that never been asked from the country and its alliance if they have
                 //5. find a random question from the refined list 
                 //6. if there is no new question, give one of the olds randomly
+
+                if (player.GetComponent<PlayerController>().IsAlone())
+                {
+                    List<int> total = player.GetComponent<PlayerController>().GetTotalQuestions(country);
+                    _result = _questionsInBank.Where(x => !total.Contains(x)).ToList();
+
+                    foreach (int i in total)
+                    {
+                        //Debug.Log("total = " + i);
+                    }
+
+                    foreach (int i in _result)
+                    {
+                        Debug.Log("result = " + i);
+                    }
+
+                    if (_result.Count != 0)
+                    {
+                        
+                        //pick a random number from the questions that the player never answered.
+                        _randomQuestionNumber = Random.Range(1, _result.Count + 1);
+
+                        Debug.Log("result = " + _result.Count + "randomNum = " + _randomQuestionNumber);
+                    }
+                    else
+                    {
+                       
+                        //means we ran out of questions and pick a random number from the qwhole uestions.
+                        //TODO: make an alarm to report afterwards. plus we need to prevent total questions of players added by same number cause the question is not new anymore
+                        _randomQuestionNumber = Random.Range(1, _questionsInBank.Length + 1);
+
+                        Debug.Log(_questionsInBank.Length + " Length is  0 " + _randomQuestionNumber);
+
+                    }
+
+
+                }
+                else
+                {
+                    //TODO: check the list of questions that player and their alliance have been asked for
+                }
             }
         }
 
-
-        foreach (List<string> question in questionBank)
-        {
-            if (_randomQuestionNumber.ToString() == question[0])
+            foreach (List<string> question in questionBank)
             {
-                return question;
+                if (question[0] == _result[_randomQuestionNumber - 1].ToString())
+                {
+                    Debug.Log(question[0]);
+                    _questionNumber = _result[_randomQuestionNumber - 1];
+                    return question;
+                    
+                }
             }
-        }
 
+        Debug.Log("question returnd null, why?!");
+
+        _questionNumber = _randomQuestionNumber;
         return null;
     }
 
@@ -168,9 +218,10 @@ public class QuestionBank : MonoBehaviour
     {
         if (Input.GetKeyDown("space"))
         {
-            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark))
+            int rndQuestion;
+            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark, out rndQuestion))
             {
-                Debug.Log(item);
+                Debug.Log(item + " - " + rndQuestion);
             }
         }
     }
