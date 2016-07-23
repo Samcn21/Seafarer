@@ -15,6 +15,7 @@ namespace Assets.Scripts.States
             StateManager.CurrentActiveState = GameData.GameStates.Play;
             allPlayers = GameObject.FindGameObjectsWithTag("Player");
             GameManager.Instance.allPlayers = allPlayers;
+            GameManager.Instance.SetPlayerInteract(true);
         }
         public void StateUpdate()
         {

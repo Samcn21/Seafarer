@@ -60,14 +60,12 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
     {
         panelQuestion.GetComponent<CanvasGroup>().alpha = 1;
         panelQuestion.GetComponent<CanvasGroup>().interactable = true;
-        GameManager.Instance.SetPlayerInteract(false);
     }
 
     public void HidePanel()
     {
         panelQuestion.GetComponent<CanvasGroup>().alpha = 0;
         panelQuestion.GetComponent<CanvasGroup>().interactable = false;
-        GameManager.Instance.SetPlayerInteract(true);
     }
 
     public void OpenPanel(GameData.TeamCountry askerCountry, GameData.City refCity) 
@@ -132,7 +130,8 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
     }
 
     public void AnswerQuestion(string answer)
-    { 
+    {
+        GUIManager.Instance.SetWaitForSeconds(0.2f);
         foreach (GameObject city in GameManager.Instance.allCities)
         {
             if (city.GetComponent<CityController>().GetCityName() == _refCity)
@@ -153,15 +152,15 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
         if (answer.ToLower() == _currectAnswer.ToLower())
         {
             //update city and player(s) based on correct answer on the network
-            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.All, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, true);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.All, _refCity, _questionNumber, true);
+            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, true);
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, true);
         }
         //incorrect answer
         else
         {
             //update city and player(s) based on incorrect answer on the network
-            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.All, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, false);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.All, _refCity, _questionNumber, false);
+            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, false);
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, false);
 
         }
 

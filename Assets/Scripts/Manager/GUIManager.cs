@@ -27,6 +27,9 @@ public class GUIManager : MonoBehaviour
     private bool _showAllPanel = false; //Demo
 
     [SerializeField]
+    private float _waitForSeconds = 0.2f;
+
+    [SerializeField]
     private GameObject[] _allPanels;
 
     public void Awake()
@@ -45,6 +48,7 @@ public class GUIManager : MonoBehaviour
 
     void Start()
     {
+        _waitForSeconds = 0.1f;
         _allPanels = GameObject.FindGameObjectsWithTag("Panel");
     }
 
@@ -63,5 +67,28 @@ public class GUIManager : MonoBehaviour
         {
             panel.GetComponent<CanvasGroup>().alpha = 0;
         }
+    }
+    public bool IsAnyPanelOpen()
+    {
+        foreach (GameObject panel in _allPanels)
+        {
+            if (panel.GetComponent<CanvasGroup>().alpha == 1 && panel.name != "PanelConnectionStatus")
+            {
+                StartCoroutine(WaitForInteraction(_waitForSeconds));
+                return true;
+            }
+        }
+        StartCoroutine(WaitForInteraction(_waitForSeconds));
+        return false;
+    }
+
+    IEnumerator WaitForInteraction(float value)
+    {
+        yield return new WaitForSeconds(value);
+    }
+
+    public void SetWaitForSeconds(float value) 
+    {
+        _waitForSeconds = value;
     }
 }

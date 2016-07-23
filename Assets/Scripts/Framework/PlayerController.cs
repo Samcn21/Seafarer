@@ -127,8 +127,11 @@ public class PlayerController : MonoBehaviour
     {
         foreach (var point in e.Touches)
         {
-            _screenPosition = point.Position;
-            _nextPosition = Camera.main.ScreenToWorldPoint(new Vector3(_screenPosition.x, _screenPosition.y, Camera.main.transform.position.y - this.transform.position.y));
+            if (GameManager.Instance.CanPlayerInteract())
+            {
+                _screenPosition = point.Position;
+                _nextPosition = Camera.main.ScreenToWorldPoint(new Vector3(_screenPosition.x, _screenPosition.y, Camera.main.transform.position.y - this.transform.position.y));
+            }
         }
     }
 
@@ -136,8 +139,9 @@ public class PlayerController : MonoBehaviour
     {
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
-            if (Vector3.Distance(_nextPosition, transform.position) < 50 && GameManager.Instance.CanPlayerInteract())//&& this.GetComponent<InputController>().CanPlayerMove())
+            if ( GameManager.Instance.CanPlayerInteract())
             {
+                //Debug.Log( GameManager.Instance.CanPlayerInteract());
                 this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
                 this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
             }

@@ -29,14 +29,12 @@ public class PanelCity : MonoBehaviour, IPanelControl
     {
         panelCity.GetComponent<CanvasGroup>().alpha = 1;
         panelCity.GetComponent<CanvasGroup>().interactable = true;
-        GameManager.Instance.SetPlayerInteract(false);
     }
 
     public void HidePanel()
     {
         panelCity.GetComponent<CanvasGroup>().alpha = 0;
         panelCity.GetComponent<CanvasGroup>().interactable = false;
-        GameManager.Instance.SetPlayerInteract(true);
     }
 
     public void OpenPanel(GameData.City cityName, GameData.TeamCountry askerCountry)

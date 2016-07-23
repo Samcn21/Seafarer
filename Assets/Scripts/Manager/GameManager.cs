@@ -81,7 +81,6 @@ public class GameManager : MonoBehaviour
     public GameObject[] allPlayers;
     public GameObject[] allCities;
 
- 
     void Awake()
     {
         
@@ -187,8 +186,20 @@ public class GameManager : MonoBehaviour
 
     public void SetPlayerInteract(bool value)
     {
-        _canPlayerInteract = value;
+    //    if (value)
+    //    {
+    //        _canPlayerInteract = false;
+    //        StartCoroutine(WaitForInteraction());
+            _canPlayerInteract = value;
+    //    }
     }
+    //IEnumerator WaitForInteraction()
+    //{
+    //    Debug.Log("waiting");
+    //    yield return new WaitForSeconds(2);
+    //    Debug.Log("waited 2 secs");
+        
+    //}
 
     public float GetPlayerActionRange()
     { 
@@ -210,6 +221,18 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (!_usingGPS ) 
+        {
+            if (GUIManager.Instance.IsAnyPanelOpen())
+            {
+                _canPlayerInteract = false;
+            }
+            else
+            {
+                _canPlayerInteract = true;
+            }
+        }
+
         //TODO
         //if we are in "ready to play" state we should get the gameplay status from JSON and set here
         //gameplayDurationSeconds = gameplayDuration * 60;
