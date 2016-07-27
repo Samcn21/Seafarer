@@ -33,6 +33,9 @@ public class CityController : MonoBehaviour
     [SerializeField]
     private float _pointsPerMinute = 2;
 
+    [SerializeField]
+    private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
+
 	void Start () 
     {
         _defence = 1;
@@ -58,6 +61,11 @@ public class CityController : MonoBehaviour
         return _cityName;
     }
 
+    public int GetCityDefence()
+    {
+        return _defence;
+    }
+
     public GameData.CityStatus GetCityStatus()
     {
         return _cityStatus;
@@ -71,6 +79,54 @@ public class CityController : MonoBehaviour
     public GameData.DefenceStatus GetCityDefenceStatus() 
     {
         return _defenceStatus;
+    }
+
+    //retrun players in range
+    public List<GameData.TeamCountry> GetPlayersInActionRange()
+    {
+        return _playersInActionRange;
+    }
+
+    //When a player enters city's action range
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            //check if the player is not already in the list, then add it.
+            if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), true);
+            }
+        }
+    }
+
+    //When a player exits city's action range
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            //check if the player is not already in the list, then remove it.
+            if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), false);
+            }
+        }
+    }
+
+    //set action range in the network
+    [PunRPC]
+    public void SetPlayersInActionRange(GameData.TeamCountry value , bool isAdding)
+    {
+        if (isAdding)
+        {
+            if (!_playersInActionRange.Contains(value))
+                _playersInActionRange.Add(value);
+        }
+        else
+        {
+            if (_playersInActionRange.Contains(value))
+                _playersInActionRange.Remove(value);
+        }
     }
 
     [PunRPC]

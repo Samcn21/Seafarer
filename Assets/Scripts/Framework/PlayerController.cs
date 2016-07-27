@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TouchScript;
 
 [System.Serializable]
-public class PlayerController : MonoBehaviour
+public class PlayerController : Photon.MonoBehaviour
 {
     [SerializeField]
     private GameData.TeamCountry _myTeam;
@@ -39,9 +39,6 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private List<int> _questionsTrue;
-
-    [SerializeField]
-    private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
 
     [SerializeField]
     private List<GameData.City> _citiesInActionRange = new List<GameData.City>();
@@ -160,17 +157,6 @@ public class PlayerController : MonoBehaviour
                 _citiesInActionRange.Add(other.gameObject.GetComponent<CityController>().GetCityName());
             }
         }
-        //is a player    
-        else
-        {
-            //check if the player is not already in the list, then add it.
-            if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
-            {
-                _playersInActionRange.Add(other.gameObject.GetComponent<PlayerController>().GetMyTeam());
-            }
-        }
-           
-        
     }
 
     //When a city exits player's action range
@@ -184,15 +170,6 @@ public class PlayerController : MonoBehaviour
                 _citiesInActionRange.Remove(other.gameObject.GetComponent<CityController>().GetCityName());
             }
         }
-        //is a player
-        else
-        {
-            //check if the player is not already in the list, then remove it.
-            if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
-            {
-                _playersInActionRange.Remove(other.gameObject.GetComponent<PlayerController>().GetMyTeam());
-            }
-        }
     }
 
     //retrun cities in range
@@ -201,20 +178,20 @@ public class PlayerController : MonoBehaviour
         return _citiesInActionRange;
     }
 
-    //retrun players in range
-    public List<GameData.TeamCountry> PlayersInActionRange()
-    {
-        return _playersInActionRange;
-    }
-
     public bool IsAlone() 
     {
         return _isAlone;
     }
 
+    [PunRPC]
+    public void ChangePlayMode(  GameData.TeamPlayMode mode) 
+    {
+        _myPlayMode = mode;
+    }
+
 
     [PunRPC]
-    public void ChangePlayerSatatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer) 
+    public void ChangePlayerStatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer) 
     {
         if (isCorrectAnswer)
         {
@@ -239,6 +216,19 @@ public class PlayerController : MonoBehaviour
         else
         { 
             //Nothing for now
+        }
+    }
+
+    //send invitation to possible alliance
+    [PunRPC]
+    public void InviteAlliance(GameData.TeamCountry receiver, GameData.TeamCountry sender, GameData.City city)
+    {
+        string msg = sender.ToString() + " wants to ally with you to attack " + city.ToString() + " Would you like to ally with them? ";
+        //I'm the reciever! sender wants to ally with me!
+        if (photonView.isMine && _myTeam == receiver)
+        {
+                Debug.Log(_myTeam + " - " + receiver);
+                GUIManager.Instance.PanelAllianceInvitation.ShowInvitationMessage(msg);
         }
     }
 }

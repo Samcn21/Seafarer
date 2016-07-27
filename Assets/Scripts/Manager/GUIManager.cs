@@ -20,7 +20,7 @@ public class GUIManager : MonoBehaviour
     public PanelReady PanelReady;
     public PanelCity PanelCity;
     public PanelQuestion PanelQuestion;
-
+    public PanelAllianceInvitation PanelAllianceInvitation;
 
     //Controller variables
     [SerializeField]

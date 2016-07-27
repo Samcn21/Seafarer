@@ -147,11 +147,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [PunRPC]
+    
     public GameObject[] GetAllPlayers() 
     {
-        allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        GetComponent<PhotonView>().RPC("FindAllPlayers", PhotonTargets.All);
         return allPlayers;
+    }
+
+    [PunRPC]
+    public void FindAllPlayers() 
+    {
+        allPlayers = GameObject.FindGameObjectsWithTag("Player");
     }
 
     public string GetGamePinCode()

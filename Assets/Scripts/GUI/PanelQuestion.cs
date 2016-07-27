@@ -153,17 +153,17 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
         {
             //update city and player(s) based on correct answer on the network
             refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, true);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, true);
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, true);
         }
         //incorrect answer
         else
         {
             //update city and player(s) based on incorrect answer on the network
             refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, false);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerSatatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, false);
-
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, false);
         }
-
+        //change play mode to exploring again no matter answer was correct or incorrect
+        askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayMode", PhotonTargets.AllBufferedViaServer, GameData.TeamPlayMode.Exploring);
         HidePanel();
     }
 }
