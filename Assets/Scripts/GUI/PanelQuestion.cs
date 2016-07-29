@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class PanelQuestion : MonoBehaviour, IPanelControl
+public class PanelQuestion : PanelParent
 {
     [SerializeField]
     private GameObject panelQuestion;
@@ -54,18 +54,6 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
     {
         if (!panelQuestion)
             Debug.LogError("panelQuestion is not found!");
-    }
-
-    public void ShowPanel()
-    {
-        panelQuestion.GetComponent<CanvasGroup>().alpha = 1;
-        panelQuestion.GetComponent<CanvasGroup>().interactable = true;
-    }
-
-    public void HidePanel()
-    {
-        panelQuestion.GetComponent<CanvasGroup>().alpha = 0;
-        panelQuestion.GetComponent<CanvasGroup>().interactable = false;
     }
 
     public void OpenPanel(GameData.TeamCountry askerCountry, GameData.City refCity) 
@@ -152,18 +140,18 @@ public class PanelQuestion : MonoBehaviour, IPanelControl
         if (answer.ToLower() == _currectAnswer.ToLower())
         {
             //update city and player(s) based on correct answer on the network
-            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, true);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, true);
+            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.All, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, true);
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.All, _refCity, _questionNumber, true);
         }
         //incorrect answer
         else
         {
             //update city and player(s) based on incorrect answer on the network
-            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.AllBufferedViaServer, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, false);
-            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.AllBufferedViaServer, _refCity, _questionNumber, false);
+            refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatus", PhotonTargets.All, _askerCountry, GameData.CityStatus.OccupiedByOneCountry, GameData.DefenceStatus.Free, false);
+            askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayerStatus", PhotonTargets.All, _refCity, _questionNumber, false);
         }
         //change play mode to exploring again no matter answer was correct or incorrect
-        askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayMode", PhotonTargets.AllBufferedViaServer, GameData.TeamPlayMode.Exploring);
+        askerCountryGO.GetComponent<PhotonView>().RPC("ChangePlayMode", PhotonTargets.All, GameData.TeamPlayMode.Exploring);
         HidePanel();
     }
 }

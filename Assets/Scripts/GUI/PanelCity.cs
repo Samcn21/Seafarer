@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class PanelCity : MonoBehaviour, IPanelControl
+public class PanelCity : PanelParent
 {
     [SerializeField]
     private GameObject panelCity;
@@ -44,17 +44,10 @@ public class PanelCity : MonoBehaviour, IPanelControl
             Debug.LogError("panelCity is not found!");
     }
 
-    public void ShowPanel()
+    public override void HidePanel()
     {
-        panelCity.GetComponent<CanvasGroup>().alpha = 1;
-        panelCity.GetComponent<CanvasGroup>().interactable = true;
-
-    }
-
-    public void HidePanel()
-    {
-        panelCity.GetComponent<CanvasGroup>().alpha = 0;
-        panelCity.GetComponent<CanvasGroup>().interactable = false;
+        GetComponent<CanvasGroup>().alpha = 0;
+        GetComponent<CanvasGroup>().interactable = false;
 
         foreach (Button btn in btnAlliances)
         {
@@ -160,7 +153,14 @@ public class PanelCity : MonoBehaviour, IPanelControl
                     btnAttack.enabled = false;
                     btnAttack.GetComponent<Image>().enabled = false;
                     CityInfo.fontSize = 12;
-                    CityInfo.text = "You cannot attack this city alone, you need to make an alliance first with one of the teams in the below";
+                    if (!city.GetComponent<CityController>().GetCityOwners().Contains(_askerCountry))
+                    {
+                        CityInfo.text = "You cannot attack this city alone, you need to make an alliance first with one of the teams in the below";
+                    }
+                    else 
+                    {
+                        CityInfo.text = "You are the owner of this city, you cannot attack a city of yours!";
+                    }
                     FindInActionRangePlayers(city);
                 }
                 //TODO: for attack to make alliance need to find alliance and open that panel first
@@ -185,8 +185,7 @@ public class PanelCity : MonoBehaviour, IPanelControl
 
             foreach (GameObject player in GameManager.Instance.GetAllPlayers())
             {
-                if (player.GetComponent<PlayerController>().GetMyTeam() == _chosenAlliance)
-                    player.GetComponent<PhotonView>().RPC("InviteAlliance" ,PhotonTargets.Others ,_chosenAlliance, _askerCountry, _city);
+                player.GetComponent<PhotonView>().RPC("InviteAlliance", PhotonTargets.Others, _chosenAlliance, _askerCountry, _city);
             }
         }
     }
@@ -198,16 +197,25 @@ public class PanelCity : MonoBehaviour, IPanelControl
         //search for all players in city's action range
         foreach (GameData.TeamCountry player in city.GetComponent<CityController>().GetPlayersInActionRange())
         {
-            if (player != _askerCountry)
+            if (!city.GetComponent<CityController>().GetCityOwners().Contains(_askerCountry))
             {
-                foreach (Button btnAlliance in btnAlliances)
+                //Debug.Log(player);
+                if (player != _askerCountry && !city.GetComponent<CityController>().GetCityOwners().Contains(player))
                 {
-                    if (btnAlliance.name.Contains(player.ToString()))
+                    //Debug.Log("filtered: " + player);
+                    foreach (Button btnAlliance in btnAlliances)
                     {
-                        btnAlliance.interactable = true;
-                        btnAlliance.GetComponent<Image>().enabled = true;
+                        if (btnAlliance.name.Contains(player.ToString()))
+                        {
+                            btnAlliance.interactable = true;
+                            btnAlliance.GetComponent<Image>().enabled = true;
+                        }
                     }
                 }
+            }
+            else 
+            {
+//  
             }
         }
     }

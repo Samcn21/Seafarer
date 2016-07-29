@@ -71,10 +71,14 @@ public class GameManager : MonoBehaviour
     private float _playerSpeed;
 
     [SerializeField]
+    private GameData.TeamCountry _myPlayer;
+
+    [SerializeField]
     private bool _canPlayerInteract = true;
 
     [SerializeField]
     private float _playerActionRange;
+
     [SerializeField]
     private float _cityActionRange;
 
@@ -206,6 +210,16 @@ public class GameManager : MonoBehaviour
     //    Debug.Log("waited 2 secs");
         
     //}
+
+    public GameData.TeamCountry GetMyPlayer() 
+    {
+        return _myPlayer;
+    }
+
+    public void SetMyPlayer(GameData.TeamCountry value)
+    {
+        _myPlayer = value;
+    }
 
     public float GetPlayerActionRange()
     { 

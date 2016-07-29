@@ -93,6 +93,11 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
+    public List<GameData.TeamCountry> Allies() 
+    {
+        return _allies;
+    }
+
     //returns the questions that have been asked from this team
     public List<int> GetTotalQuestions(GameData.TeamCountry team)
     {
@@ -136,15 +141,17 @@ public class PlayerController : Photon.MonoBehaviour
     {
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
-            if ( GameManager.Instance.CanPlayerInteract())
+            if (GameManager.Instance.CanPlayerInteract())
             {
                 //Debug.Log( GameManager.Instance.CanPlayerInteract());
                 this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
                 this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
             }
-            
+
         }
     }
+
+
 
     //A city or player comes to player's action range
     void OnTriggerEnter(Collider other)
@@ -173,25 +180,25 @@ public class PlayerController : Photon.MonoBehaviour
     }
 
     //retrun cities in range
-    public List<GameData.City> CitiesInActionRange() 
+    public List<GameData.City> CitiesInActionRange()
     {
         return _citiesInActionRange;
     }
 
-    public bool IsAlone() 
+    public bool IsAlone()
     {
         return _isAlone;
     }
 
     [PunRPC]
-    public void ChangePlayMode(  GameData.TeamPlayMode mode) 
+    public void ChangePlayMode(GameData.TeamPlayMode mode)
     {
         _myPlayMode = mode;
     }
 
 
     [PunRPC]
-    public void ChangePlayerStatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer) 
+    public void ChangePlayerStatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer)
     {
         if (isCorrectAnswer)
         {
@@ -214,21 +221,60 @@ public class PlayerController : Photon.MonoBehaviour
 
         }
         else
-        { 
+        {
             //Nothing for now
         }
+    }
+
+    [PunRPC]
+    public void ChangePlayerStatusInvited(GameData.TeamCountry invited, GameData.TeamCountry inviter)
+    {
+
+            if (_myTeam == inviter)
+            {
+                _myPlayMode = GameData.TeamPlayMode.Attacking;
+                _isAlone = false;
+                _allies.Add(invited);
+            }
+
+            if (_myTeam == invited)
+            {
+                _myPlayMode = GameData.TeamPlayMode.Attacking;
+                _isAlone = false;
+                _allies.Add(inviter);
+            }
+
     }
 
     //send invitation to possible alliance
     [PunRPC]
     public void InviteAlliance(GameData.TeamCountry receiver, GameData.TeamCountry sender, GameData.City city)
     {
-        string msg = sender.ToString() + " wants to ally with you to attack " + city.ToString() + " Would you like to ally with them? ";
+        string msg = sender.ToString() + " wants to ally with you to attack " + city.ToString() + " Would you like to join them? ";
         //I'm the reciever! sender wants to ally with me!
         if (photonView.isMine && _myTeam == receiver)
         {
-                Debug.Log(_myTeam + " - " + receiver);
-                GUIManager.Instance.PanelAllianceInvitation.ShowInvitationMessage(msg);
+            GUIManager.Instance.PanelAllianceInvitation.ShowInvitationMessage(msg, receiver, sender, city);
         }
     }
+
+    [PunRPC]
+    public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter)
+    {
+        //if this is my player and I was the country who sent the invitation for alliance
+        if (photonView.isMine && _myTeam == inviter)
+        {
+            //accepted
+            if (answer)
+            {
+                GUIManager.Instance.PanelInfo.ShowMessage(invited + " joined you. Now the city should defend itself.");
+            }
+            //rejected
+            else
+            {
+                GUIManager.Instance.PanelInfo.ShowMessage(invited + " wouldn't like to ally with you!");
+            }
+        }
+    }
+
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class PanelReady : MonoBehaviour, IPanelControl
+public class PanelReady : PanelParent
 {
     public GameObject panelReady;
     public Text readyMsg;
@@ -28,18 +28,6 @@ public class PanelReady : MonoBehaviour, IPanelControl
         {
             _waitForSeconds -= Time.deltaTime;
         }
-    }
-
-    public void ShowPanel()
-    {
-        panelReady.GetComponent<CanvasGroup>().alpha = 1;
-        panelReady.GetComponent<CanvasGroup>().interactable = true;
-    }
-
-    public void HidePanel()
-    {
-        panelReady.GetComponent<CanvasGroup>().alpha = 0;
-        panelReady.GetComponent<CanvasGroup>().interactable = false;
     }
 
     public void ShowPanelChosenCountry(GameData.TeamCountry team)

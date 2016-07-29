@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class CityController : MonoBehaviour 
+public class CityController : MonoBehaviour
 {
     [SerializeField]
     private GameData.City _cityName;
@@ -36,7 +36,7 @@ public class CityController : MonoBehaviour
     [SerializeField]
     private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
 
-	void Start () 
+    void Start()
     {
         _defence = 1;
 
@@ -54,9 +54,9 @@ public class CityController : MonoBehaviour
             _isPlayerCapital = false;
         }
 
-	}
+    }
 
-    public GameData.City GetCityName() 
+    public GameData.City GetCityName()
     {
         return _cityName;
     }
@@ -76,7 +76,7 @@ public class CityController : MonoBehaviour
         return _cityOwners;
     }
 
-    public GameData.DefenceStatus GetCityDefenceStatus() 
+    public GameData.DefenceStatus GetCityDefenceStatus()
     {
         return _defenceStatus;
     }
@@ -92,10 +92,13 @@ public class CityController : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            //check if the player is not already in the list, then add it.
-            if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            if (!_cityOwners.Contains(other.GetComponent<PlayerController>().GetMyTeam()))
             {
-                this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), true);
+                //check if the player is not already in the list, then add it.
+                if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+                {
+                    this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), true);
+                }
             }
         }
     }
@@ -105,17 +108,20 @@ public class CityController : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            //check if the player is not already in the list, then remove it.
-            if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+            if (!_cityOwners.Contains(other.GetComponent<PlayerController>().GetMyTeam()))
             {
-                this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), false);
+                //check if the player is not already in the list, then remove it.
+                if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+                {
+                    this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), false);
+                }
             }
         }
     }
 
     //set action range in the network
     [PunRPC]
-    public void SetPlayersInActionRange(GameData.TeamCountry value , bool isAdding)
+    public void SetPlayersInActionRange(GameData.TeamCountry value, bool isAdding)
     {
         if (isAdding)
         {
@@ -156,9 +162,15 @@ public class CityController : MonoBehaviour
             //change defence status
             _defenceStatus = defenceStatus;
 
+            //remove from city action range
+            if (_playersInActionRange.Contains(cityOwner))
+            {
+                _playersInActionRange.Remove(cityOwner);
+            }
+
         }
         else
-        { 
+        {
             //TODO: add to forbiden country dictionary for a few minutes.
 
             //change defence status

@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class PanelSelectCountry : MonoBehaviour, IPanelControl
+public class PanelSelectCountry : PanelParent
 {
     public GameObject panelSelectCountry;
     public Text textInfo;
@@ -36,17 +36,11 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
         allCountryButtons = GameObject.FindGameObjectsWithTag("CountryButton");
     }
 
-    public void ShowPanel()
+    public override void ShowPanel()
     {
-        panelSelectCountry.GetComponent<CanvasGroup>().alpha = 1;
-        panelSelectCountry.GetComponent<CanvasGroup>().interactable = true;
+        GetComponent<CanvasGroup>().alpha = 1;
+        GetComponent<CanvasGroup>().interactable = true;
         CheckAlreadyTaken();
-    }
-
-    public void HidePanel()
-    {
-        panelSelectCountry.GetComponent<CanvasGroup>().alpha = 0;
-        panelSelectCountry.GetComponent<CanvasGroup>().interactable = false;
     }
 
     //this method is invoked only by Onclick() function on the country buttons in chosen country panel
@@ -57,6 +51,9 @@ public class PanelSelectCountry : MonoBehaviour, IPanelControl
             if (GameData.TeamCountry.IsDefined(typeof(GameData.TeamCountry), team))
             {
                 _chosenTeam = (GameData.TeamCountry)GameData.TeamCountry.Parse(typeof(GameData.TeamCountry), team, true);
+
+                GameManager.Instance.SetMyPlayer(_chosenTeam);
+                GUIManager.Instance.PanelConnectionStatus.playerTeam.text = GameManager.Instance.GetMyPlayer().ToString();
 
                 //if already take then exit the function
                 if (_alreadyTakenCountry.Contains(_chosenTeam))

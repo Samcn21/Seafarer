@@ -21,6 +21,8 @@ public class GUIManager : MonoBehaviour
     public PanelCity PanelCity;
     public PanelQuestion PanelQuestion;
     public PanelAllianceInvitation PanelAllianceInvitation;
+    public PanelInfo PanelInfo;
+
 
     //Controller variables
     [SerializeField]

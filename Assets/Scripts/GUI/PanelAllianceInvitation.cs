@@ -2,12 +2,21 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class PanelAllianceInvitation : MonoBehaviour, IPanelControl
+public class PanelAllianceInvitation : PanelParent
 {
     public GameObject panelAllianceInvitation;
     public Text textInfo;
     public Button yes;
     public Button no;
+
+    [SerializeField]
+    private GameData.TeamCountry _invited;
+
+    [SerializeField]
+    private GameData.TeamCountry _inviter;
+
+    [SerializeField]
+    private GameData.City _city;
 
     void Awake()
     {
@@ -15,22 +24,33 @@ public class PanelAllianceInvitation : MonoBehaviour, IPanelControl
             Debug.LogError("panelAllianceInvitation is not found!");
     }
 
-    public void ShowPanel()
+    public void ShowInvitationMessage(string msg, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city)
     {
-        panelAllianceInvitation.GetComponent<CanvasGroup>().alpha = 1;
-        panelAllianceInvitation.GetComponent<CanvasGroup>().interactable = true;
-    }
-
-    public void HidePanel()
-    {
-        panelAllianceInvitation.GetComponent<CanvasGroup>().alpha = 0;
-        panelAllianceInvitation.GetComponent<CanvasGroup>().interactable = false;
-    }
-
-    public void ShowInvitationMessage(string msg) 
-    {
-        ShowPanel();
+        _invited = invited;
+        _inviter = inviter;
+        _city = city;
         textInfo.text = msg;
+        ShowPanel();
     }
 
+    public void AcceptRejectInvitation(bool answer)
+    {
+
+        foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        {
+            if (answer)
+            {
+                //1. send acceptance to all network, the inviter will recieve their answer
+                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter);
+                player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter);
+
+            }
+            else
+            {
+                //1. send rejection to all network, the inviter will recieve their answer
+                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, false, _invited, _inviter);
+            }
+        }
+        HidePanel();
+    }
 }

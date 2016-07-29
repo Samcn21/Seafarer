@@ -166,7 +166,7 @@ public class QuestionBank : MonoBehaviour
 
                     foreach (int i in _result)
                     {
-                        Debug.Log("result = " + i);
+                        //Debug.Log("result = " + i);
                     }
 
                     if (_result.Count != 0)
@@ -175,7 +175,7 @@ public class QuestionBank : MonoBehaviour
                         //pick a random number from the questions that the player never answered.
                         _randomQuestionNumber = Random.Range(1, _result.Count + 1);
 
-                        Debug.Log("result = " + _result.Count + "randomNum = " + _randomQuestionNumber);
+                        //Debug.Log("result = " + _result.Count + "randomNum = " + _randomQuestionNumber);
                     }
                     else
                     {
@@ -184,7 +184,7 @@ public class QuestionBank : MonoBehaviour
                         //TODO: make an alarm to report afterwards. plus we need to prevent total questions of players added by same number cause the question is not new anymore
                         _randomQuestionNumber = Random.Range(1, _questionsInBank.Length + 1);
 
-                        Debug.Log(_questionsInBank.Length + " Length is  0 " + _randomQuestionNumber);
+                        //Debug.Log(_questionsInBank.Length + " Length is  0 " + _randomQuestionNumber);
 
                     }
 
@@ -201,7 +201,7 @@ public class QuestionBank : MonoBehaviour
             {
                 if (question[0] == _result[_randomQuestionNumber - 1].ToString())
                 {
-                    Debug.Log(question[0]);
+                    Debug.Log("question number: " + question[0]);
                     _questionNumber = _result[_randomQuestionNumber - 1];
                     return question;
                     
