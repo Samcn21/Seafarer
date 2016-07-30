@@ -59,7 +59,7 @@ public class PanelCity : PanelParent
     public void OpenPanel(GameData.City cityName, GameData.TeamCountry askerCountry)
     {
         ShowPanel();
-        CityName.text = cityName.ToString();
+        string cityNameStatus = cityName.ToString();
         _city = cityName;
         _askerCountry = askerCountry;
 
@@ -77,12 +77,14 @@ public class PanelCity : PanelParent
                     btnAttack.enabled = false;
                     btnAttack.GetComponent<Image>().enabled = false;
                     CityInfo.text = "The city is under attack by other countries now, come back later!";
+                    cityNameStatus += " is under attack";
                 }
                 else if (CityController.GetCityDefenceStatus() == GameData.DefenceStatus.UnderSiege)
                 {
                     btnAttack.enabled = false;
                     btnAttack.GetComponent<Image>().enabled = false;
                     CityInfo.text = "The city is under siege by other countries now, come back later!";
+                    cityNameStatus += " is under siege";
                 }
                 else
                 {
@@ -118,7 +120,7 @@ public class PanelCity : PanelParent
 
             }
         }
-
+        CityName.text = cityNameStatus;
     }
 
     public void Attack()
@@ -178,6 +180,12 @@ public class PanelCity : PanelParent
     //this method is invoked only by Onclick() function when player wants to make alliance
     public void ChosenAlliance(string team)
     {
+        //hide all after choosing a country for alliance
+        foreach (Button btnAlliance in btnAlliances)
+        {
+            btnAlliance.interactable = false;
+        }
+
         //converting chosen country from string to enum which saved in GameData Class
         if (GameData.TeamCountry.IsDefined(typeof(GameData.TeamCountry), team))
         {
@@ -215,7 +223,7 @@ public class PanelCity : PanelParent
             }
             else 
             {
-//  
+            //  
             }
         }
     }

@@ -56,7 +56,7 @@ public class PanelQuestion : PanelParent
             Debug.LogError("panelQuestion is not found!");
     }
 
-    public void OpenPanel(GameData.TeamCountry askerCountry, GameData.City refCity) 
+    public void OpenPanel(GameData.TeamCountry askerCountry, GameData.City refCity)
     {
         ShowPanel();
         _refCity = refCity;
@@ -71,50 +71,47 @@ public class PanelQuestion : PanelParent
         //2. return a question 
         for (int i = 0; i < theQuestion.Count; i++)
         {
-           switch (i)
-           {
-                   //first element of the list contains the question number
-               case 0:
-                   foreach (GameObject player in GameManager.Instance.GetAllPlayers())
-                   {
-                       //3. add the question to the total player and plus to their allience too
-                       //TODO: for allience too!
-                       if (player.GetComponent<PlayerController>().GetMyTeam() == askerCountry)
-                       {
-                           player.GetComponent<PlayerController>().AddToTotalQuestions(_questionNumber);
-                       }
-                   }
-                   break;
-               case 1:
-                   question.text = theQuestion[i];
-                   break;
-               case 2:
-                   choiceA.text = theQuestion[i];
-                   break;
-               case 3:
-                   choiceB.text = theQuestion[i];
-                   break;
-               case 4:
-                   choiceC.text = theQuestion[i];
-                   break;
-               case 5:
-                   _currectAnswer = theQuestion[i];
-                   Debug.Log(_currectAnswer);
-                   break;
-               default:
-                   Debug.Log("this question has more than 6 elements!!!!");
-                   break;
-           }
+            switch (i)
+            {
+                //first element of the list contains the question number
+                case 0:
+                    foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+                    {
+                        //3. add the question to the total player and plus to their allience too
+                        //TODO: for allience too!
+                        player.GetComponent<PhotonView>().RPC("AddToTotalQuestions", PhotonTargets.All, _questionNumber, askerCountry);
+                    }
+                    break;
+                case 1:
+                    question.text = theQuestion[i];
+                    break;
+                case 2:
+                    choiceA.text = theQuestion[i];
+                    break;
+                case 3:
+                    choiceB.text = theQuestion[i];
+                    break;
+                case 4:
+                    choiceC.text = theQuestion[i];
+                    break;
+                case 5:
+                    _currectAnswer = theQuestion[i];
+                    Debug.Log(_currectAnswer);
+                    break;
+                default:
+                    Debug.Log("this question has more than 6 elements!!!!");
+                    break;
+            }
         }
 
 
-        
+
         //asks all players in the network to update their players active in the scene 
         //and find my player or alliances (later) to add the total question
 
 
         //city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderAttack);
-        
+
     }
 
     public void AnswerQuestion(string answer)

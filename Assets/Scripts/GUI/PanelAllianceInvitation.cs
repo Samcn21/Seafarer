@@ -43,7 +43,16 @@ public class PanelAllianceInvitation : PanelParent
                 //1. send acceptance to all network, the inviter will recieve their answer
                 player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter);
                 player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter);
-
+                foreach (GameObject city in GameManager.Instance.allCities)
+                {
+                    //finding the clicked city between all cities
+                    if (city.GetComponent<CityController>().GetCityName() == _city)
+                    {
+                        //change city status to under siege in all network
+                        city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderSiege);
+                    }
+                }
+                GUIManager.Instance.PanelCity.HidePanel();
             }
             else
             {

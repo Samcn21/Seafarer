@@ -35,14 +35,21 @@ public class PanelConnectionStatus : PanelParent
     public void ShowTest()
     {
         string text = string.Empty;
-        foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        //foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        //{
+        //    if (player.GetComponent<PlayerController>().GetMyTeam() == GameManager.Instance.GetMyPlayer())
+        //    {
+        //        foreach (GameData.TeamCountry ally in player.GetComponent<PlayerController>().Allies())
+        //        {
+        //            text += ally.ToString() + " ,";
+        //        }
+        //    }
+        //}
+        foreach (GameObject city in GameManager.Instance.allCities)
         {
-            if (player.GetComponent<PlayerController>().GetMyTeam() == GameManager.Instance.GetMyPlayer())
+            if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.UnderSiege)
             {
-                foreach (GameData.TeamCountry ally in player.GetComponent<PlayerController>().Allies())
-                {
-                    text += ally.ToString() + " ,";
-                }
+                text += city.name + " ,";
             }
         }
 

@@ -104,9 +104,11 @@ public class PlayerController : Photon.MonoBehaviour
         return _questionsTotal;
     }
 
-    public void AddToTotalQuestions(int questionNumber)
+    [PunRPC]
+    public void AddToTotalQuestions(int questionNumber, GameData.TeamCountry askerCountry)
     {
-        _questionsTotal.Add(questionNumber);
+        if (_myTeam == askerCountry)
+            _questionsTotal.Add(questionNumber);
     }
 
     private void OnEnable()
@@ -268,6 +270,7 @@ public class PlayerController : Photon.MonoBehaviour
             if (answer)
             {
                 GUIManager.Instance.PanelInfo.ShowMessage(invited + " joined you. Now the city should defend itself.");
+                GUIManager.Instance.PanelCity.HidePanel();
             }
             //rejected
             else
