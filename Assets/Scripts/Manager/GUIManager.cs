@@ -22,6 +22,7 @@ public class GUIManager : MonoBehaviour
     public PanelQuestion PanelQuestion;
     public PanelAllianceInvitation PanelAllianceInvitation;
     public PanelInfo PanelInfo;
+    public PanelSiege PanelSiege;
 
 
     //Controller variables

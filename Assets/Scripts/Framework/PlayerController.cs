@@ -10,6 +10,9 @@ public class PlayerController : Photon.MonoBehaviour
     private GameData.TeamCountry _myTeam;
 
     [SerializeField]
+    private int _diceNumber = 0;
+
+    [SerializeField]
     private GameData.TeamPlayMode _myPlayMode = GameData.TeamPlayMode.Exploring;
 
     [SerializeField]
@@ -79,6 +82,18 @@ public class PlayerController : Photon.MonoBehaviour
     public GameData.TeamCountry GetMyTeam()
     {
         return _myTeam;
+    }
+
+    [PunRPC]
+    public void SetDiceNumber(int diceNumber ,GameData.TeamCountry country)
+    {
+        if (_myTeam == country)
+            _diceNumber = diceNumber;
+    }
+
+    public int GetDiceNumber()
+    {
+        return  _diceNumber;
     }
 
     public GameData.TeamCountry FindCurrentAlly()
@@ -261,7 +276,7 @@ public class PlayerController : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter)
+    public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city, int cityDefenceDice)
     {
         //if this is my player and I was the country who sent the invitation for alliance
         if (photonView.isMine && _myTeam == inviter)
@@ -269,8 +284,11 @@ public class PlayerController : Photon.MonoBehaviour
             //accepted
             if (answer)
             {
-                GUIManager.Instance.PanelInfo.ShowMessage(invited + " joined you. Now the city should defend itself.");
                 GUIManager.Instance.PanelCity.HidePanel();
+                GUIManager.Instance.PanelSiege.ShowPanel();
+                GUIManager.Instance.PanelInfo.ShowMessage(invited + " joined you. Now the city should defend itself.");
+
+                GUIManager.Instance.PanelSiege.SetPanelInfo(city, inviter, invited, cityDefenceDice);
             }
             //rejected
             else

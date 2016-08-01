@@ -40,8 +40,9 @@ public class PanelAllianceInvitation : PanelParent
         {
             if (answer)
             {
+                int cityDefenceDice = GUIManager.Instance.PanelSiege.GetCityDefence();
                 //1. send acceptance to all network, the inviter will recieve their answer
-                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter);
+                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter, _city, cityDefenceDice);
                 player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter);
                 foreach (GameObject city in GameManager.Instance.allCities)
                 {
@@ -53,6 +54,9 @@ public class PanelAllianceInvitation : PanelParent
                     }
                 }
                 GUIManager.Instance.PanelCity.HidePanel();
+                GUIManager.Instance.PanelSiege.ShowPanel();
+                GUIManager.Instance.PanelSiege.SetPanelInfo(_city, _inviter, _invited, cityDefenceDice);
+                
             }
             else
             {
