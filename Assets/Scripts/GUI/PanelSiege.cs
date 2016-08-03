@@ -32,14 +32,19 @@ public class PanelSiege : PanelParent
     [SerializeField]
     private int _cityDiceNumber = 0;
 
+    [SerializeField]
+    private int _myDiceNumber = 0;
+
     void Awake()
     {
         if (!panelSiege)
             Debug.LogError("panelInfo is not found!");
     }
 
+    [PunRPC]
     public void SetPanelInfo(GameData.City cityName, GameData.TeamCountry inviter, GameData.TeamCountry invited, int cityDefenceNumber)
     {
+
         _invited = invited;
         _inviter = inviter;
         _city = cityName;
@@ -50,8 +55,8 @@ public class PanelSiege : PanelParent
         info.text = "roll a dice!";
         countryInvitedResult.text = string.Empty;
         countryInviterResult.text = string.Empty;
-        cityResult.text = cityDefenceNumber.ToString();
 
+        cityResult.text = cityDefenceNumber.ToString();
 
     }
 
@@ -63,44 +68,73 @@ public class PanelSiege : PanelParent
 
     private int GetMyDiceNumber()
     {
-        return Random.Range(1, 11);
+        _myDiceNumber = Random.Range(1, 11);
+        return _myDiceNumber;
+    }
+
+    [PunRPC]
+    public void SetDiceNumber(int diceNumber, GameData.TeamCountry country)
+    {
+        if (_invited == country)
+            _invitedDiceNumber = diceNumber;
+
+        if (_inviter == country)
+            _inviterDiceNumber = diceNumber;
     }
 
     public void RollDice()
     {
-        foreach (GameObject player in GameManager.Instance.GetAllPlayers())
-        {
-            player.GetComponent<PhotonView>().RPC("SetDiceNumber", PhotonTargets.All, GetMyDiceNumber(), GameManager.Instance.GetMyPlayer());
+        if (rollDiceOK.GetComponentInChildren<Text>().text != "OK")
+        { 
+            GetMyDiceNumber();
+            GetComponent<PhotonView>().RPC("SetDiceNumber", PhotonTargets.All, _myDiceNumber, GameManager.Instance.GetMyPlayer());
         }
-        CheckResult();
+
+        //
+
+        //if ((_inviterDiceNumber + _invitedDiceNumber) > _cityDiceNumber)
+        //{
+        //    info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is higher than city's number. you can now attack the city";
+        //}
+        //else
+        //{
+        //    info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is lower than city's number. the siege is broken!";
+        //}
+
+
     }
 
-    private void CheckResult()
+    void OnGUI() 
     {
-        foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        if (_inviterDiceNumber != 0)
         {
-            PlayerController PlayerController = player.GetComponent<PlayerController>();
-            PhotonView PhotonView = player.GetComponent<PhotonView>();
-
-            if (PhotonView.isMine && PlayerController.GetMyTeam() == _inviter && PlayerController.GetDiceNumber() != 0)
-            {
-                _inviterDiceNumber = PlayerController.GetDiceNumber();
-                countryInviterResult.text = PlayerController.GetDiceNumber().ToString();
-            }
-
-            if (PhotonView.isMine && PlayerController.GetMyTeam() == _invited && PlayerController.GetDiceNumber() != 0)
-            {
-                _invitedDiceNumber = PlayerController.GetDiceNumber();
-                countryInvitedResult.text = PlayerController.GetDiceNumber().ToString();
-            }
-
-            //TODO: should _rolledInvited and _rolledInviter be set through network if inviterDiceNum and invitedDiceNum != 0
+            countryInviterResult.text = _inviterDiceNumber.ToString();
+        }
+        else
+        {
+            countryInviterResult.text = "";
         }
 
-        if (_rolledInviter && _rolledInvited)
+        if (_invitedDiceNumber != 0)
+        {
+            countryInvitedResult.text = _invitedDiceNumber.ToString();
+        }
+        else
+        {
+            countryInvitedResult.text = "";
+        }
+
+        if (_invitedDiceNumber != 0 && _inviterDiceNumber != 0)
         {
             rollDiceOK.GetComponentInChildren<Text>().text = "OK";
+        }
+    }
 
+
+    public void OK()
+    {
+        if (rollDiceOK.GetComponentInChildren<Text>().text == "OK")
+        {
             if ((_inviterDiceNumber + _invitedDiceNumber) > _cityDiceNumber)
             {
                 info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is higher than city's number. you can now attack the city";
@@ -110,13 +144,6 @@ public class PanelSiege : PanelParent
                 info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is lower than city's number. the siege is broken!";
             }
 
-        }
-    }
-
-    public void OK()
-    {
-        if (rollDiceOK.GetComponentInChildren<Text>().text == "OK")
-        {
             //HidePanel();
             Debug.Log("ask the question!");
         }

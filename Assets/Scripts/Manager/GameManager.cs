@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     //References
     public QuestionBank QuestionBank;
+    public RollDice RollDice;
 
     private static GameManager _instance = null;
     public static GameManager Instance

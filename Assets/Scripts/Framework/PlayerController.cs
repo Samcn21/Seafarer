@@ -9,8 +9,7 @@ public class PlayerController : Photon.MonoBehaviour
     [SerializeField]
     private GameData.TeamCountry _myTeam;
 
-    [SerializeField]
-    private int _diceNumber = 0;
+
 
     [SerializeField]
     private GameData.TeamPlayMode _myPlayMode = GameData.TeamPlayMode.Exploring;
@@ -84,17 +83,7 @@ public class PlayerController : Photon.MonoBehaviour
         return _myTeam;
     }
 
-    [PunRPC]
-    public void SetDiceNumber(int diceNumber ,GameData.TeamCountry country)
-    {
-        if (_myTeam == country)
-            _diceNumber = diceNumber;
-    }
 
-    public int GetDiceNumber()
-    {
-        return  _diceNumber;
-    }
 
     public GameData.TeamCountry FindCurrentAlly()
     {
