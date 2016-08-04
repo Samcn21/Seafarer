@@ -28,6 +28,9 @@ public class CityController : MonoBehaviour
     private int _defence;
 
     [SerializeField]
+    private int _cityDiceNumber = 0;
+
+    [SerializeField]
     private GameData.DefenceStatus _defenceStatus;
 
     [SerializeField]
@@ -140,6 +143,40 @@ public class CityController : MonoBehaviour
     {
         _defenceStatus = value;
     }
+
+    [PunRPC]
+    public void SetCityDiceNumber(int cityDiceNumber) 
+    {
+        _cityDiceNumber = cityDiceNumber;
+    }
+
+    public int GetCityDiceNumber()
+    {
+        return _cityDiceNumber;
+    }
+
+    [PunRPC]
+    public void ChangeCityStatusAllies(GameData.TeamCountry cityOwnerInviter, GameData.TeamCountry cityOwnerInvited, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus)
+    {
+        //remove previous owner
+        _cityOwners.Clear();
+
+        //add invited and inviter!
+        _cityOwners.Add(cityOwnerInviter);
+        _cityOwners.Add(cityOwnerInvited);
+
+        //occupied by two country makes the defence 3 //more info --> Game Designer
+        _defence = 3;
+                
+        _cityDiceNumber = 0;
+
+        //city is free (other teams can attack)
+        _defenceStatus = defenceStatus;
+
+        //occupied by allies
+        _cityStatus = cityStatus;
+    }
+    
 
     [PunRPC]
     public void ChangeCityStatus(GameData.TeamCountry cityOwner, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus, bool isCorrectAnswer)

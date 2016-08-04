@@ -53,6 +53,6 @@ public class PanelConnectionStatus : PanelParent
             }
         }
 
-        GUIManager.Instance.PanelConnectionStatus.testText.text = text;
+        GUIManager.Instance.PanelConnectionStatus.testText.text = GameManager.Instance.QuestionBank.GetRandomQuestionNumber().ToString();
     }
 }

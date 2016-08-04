@@ -35,14 +35,27 @@ public class PanelSiege : PanelParent
     [SerializeField]
     private int _myDiceNumber = 0;
 
+    private bool _canRollDice;
+
+    private bool _canInvitedSeeMsg;
+
     void Awake()
     {
         if (!panelSiege)
             Debug.LogError("panelInfo is not found!");
+
+    }
+
+    public override void ShowPanel()
+    {
+        base.ShowPanel();
+        _canRollDice = true;
+
+
     }
 
     [PunRPC]
-    public void SetPanelInfo(GameData.City cityName, GameData.TeamCountry inviter, GameData.TeamCountry invited, int cityDefenceNumber)
+    public void SetPanelInfo(GameData.City cityName, GameData.TeamCountry inviter, GameData.TeamCountry invited)
     {
 
         _invited = invited;
@@ -55,15 +68,6 @@ public class PanelSiege : PanelParent
         info.text = "roll a dice!";
         countryInvitedResult.text = string.Empty;
         countryInviterResult.text = string.Empty;
-
-        cityResult.text = cityDefenceNumber.ToString();
-
-    }
-
-    public int GetCityDefence()
-    {
-        _cityDiceNumber = Random.Range(1, 21);
-        return _cityDiceNumber;
     }
 
     private int GetMyDiceNumber()
@@ -82,12 +86,26 @@ public class PanelSiege : PanelParent
             _inviterDiceNumber = diceNumber;
     }
 
+
+    public void GetCityDiceNumber()
+    {
+        foreach (GameObject city in GameManager.Instance.allCities)
+        {
+            //finding city dice number
+            if (city.GetComponent<CityController>().GetCityName() == _city)
+            {
+                _cityDiceNumber = city.GetComponent<CityController>().GetCityDiceNumber();
+            }
+        }
+    }
     public void RollDice()
     {
-        if (rollDiceOK.GetComponentInChildren<Text>().text != "OK")
-        { 
+        if (rollDiceOK.GetComponentInChildren<Text>().text != "OK" && _canRollDice)
+        {
             GetMyDiceNumber();
-            GetComponent<PhotonView>().RPC("SetDiceNumber", PhotonTargets.All, _myDiceNumber, GameManager.Instance.GetMyPlayer());
+            GetCityDiceNumber();
+            GetComponent<PhotonView>().RPC("SetDiceNumber", PhotonTargets.All, _myDiceNumber, GameManager.Instance.GetMyPlayerTeam());
+            _canRollDice = false;
         }
 
         //
@@ -104,8 +122,17 @@ public class PanelSiege : PanelParent
 
     }
 
-    void OnGUI() 
+    void OnGUI()
     {
+        if (_cityDiceNumber != 0)
+        {
+            cityResult.text = _cityDiceNumber.ToString();
+        }
+        else
+        {
+            cityResult.text = "";
+        }
+
         if (_inviterDiceNumber != 0)
         {
             countryInviterResult.text = _inviterDiceNumber.ToString();
@@ -127,25 +154,80 @@ public class PanelSiege : PanelParent
         if (_invitedDiceNumber != 0 && _inviterDiceNumber != 0)
         {
             rollDiceOK.GetComponentInChildren<Text>().text = "OK";
+
+            if (!_canInvitedSeeMsg)
+            {
+                if ((_inviterDiceNumber + _invitedDiceNumber) > _cityDiceNumber)
+                {
+                    info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is higher than city's number. you can now attack the city";
+                }
+                else
+                {
+                    info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is lower than city's number. the siege is broken!";
+                }
+            }
+            else
+            {
+                info.text = "Please wait until " + _inviter + " accept to attack!";
+            }
         }
     }
 
+    public void ResetPanel()
+    {
+        rollDiceOK.GetComponentInChildren<Text>().text = "Roll Dice";
+        _invited = GameData.TeamCountry.___;
+        _inviter = GameData.TeamCountry.___;
+        _inviterDiceNumber = 0;
+        _invitedDiceNumber = 0;
+        _cityDiceNumber = 0;
+        _myDiceNumber = 0;
+        _canRollDice = false;
+    }
 
     public void OK()
     {
         if (rollDiceOK.GetComponentInChildren<Text>().text == "OK")
         {
+            //allies can attack now
             if ((_inviterDiceNumber + _invitedDiceNumber) > _cityDiceNumber)
             {
-                info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is higher than city's number. you can now attack the city";
+                if (GameManager.Instance.GetMyPlayerTeam() == _inviter) //only inviter goes to panel question
+                {
+                    HidePanel();
+                    GUIManager.Instance.PanelQuestion.OpenPanel(_inviter, _invited, _city);
+                    ResetPanel();
+                }
+                else if (GameManager.Instance.GetMyPlayerTeam() == _invited && GameManager.Instance.QuestionBank.GetRandomQuestionNumber() == 0) //means inviter still didn't click on OK!
+                {
+                    _canInvitedSeeMsg = true;
+                }
+                else if (GameManager.Instance.GetMyPlayerTeam() == _invited && GameManager.Instance.QuestionBank.GetRandomQuestionNumber() != 0)
+                {
+                    HidePanel();
+                    GUIManager.Instance.PanelQuestion.OpenPanelInvited(_inviter, _invited, _city);
+                    ResetPanel();
+                }
             }
-            else
+            else //the siege is broken! changing everything to normal
             {
-                info.text = _inviter.ToString() + " and " + _invited.ToString() + " get " + (_inviterDiceNumber + _invitedDiceNumber) + " on the dice together which is lower than city's number. the siege is broken!";
-            }
+                foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+                {
+                    player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter, true);
+                }
 
-            //HidePanel();
-            Debug.Log("ask the question!");
+                foreach (GameObject city in GameManager.Instance.allCities)
+                {
+                    if (city.GetComponent<CityController>().GetCityName() == _city)
+                    {
+                        city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.Free);
+                        city.GetComponent<PhotonView>().RPC("SetCityDiceNumber", PhotonTargets.All, 0);
+                    }
+                }
+
+                HidePanel();
+                ResetPanel();
+            }
         }
     }
 }

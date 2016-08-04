@@ -18,6 +18,9 @@ public class PanelAllianceInvitation : PanelParent
     [SerializeField]
     private GameData.City _city;
 
+    [SerializeField]
+    private int _cityDiceNumber = 0;
+
     void Awake()
     {
         if (!panelAllianceInvitation)
@@ -33,17 +36,22 @@ public class PanelAllianceInvitation : PanelParent
         ShowPanel();
     }
 
+    private int GetCityDefence()
+    {
+        _cityDiceNumber = Random.Range(1 , 2);
+        return _cityDiceNumber;
+    }
+
     public void AcceptRejectInvitation(bool answer)
     {
-
+        GetCityDefence();
         foreach (GameObject player in GameManager.Instance.GetAllPlayers())
         {
             if (answer)
             {
-                int cityDefenceDice = GUIManager.Instance.PanelSiege.GetCityDefence();
                 //1. send acceptance to all network, the inviter will recieve their answer
-                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter, _city, cityDefenceDice);
-                player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter);
+                player.GetComponent<PhotonView>().RPC("Receiver", PhotonTargets.All, true, _invited, _inviter, _city);
+                player.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter, false);
                 foreach (GameObject city in GameManager.Instance.allCities)
                 {
                     //finding the clicked city between all cities
@@ -51,11 +59,14 @@ public class PanelAllianceInvitation : PanelParent
                     {
                         //change city status to under siege in all network
                         city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderSiege);
+                        city.GetComponent<PhotonView>().RPC("SetCityDiceNumber", PhotonTargets.All, _cityDiceNumber);
                     }
                 }
+                GUIManager.Instance.PanelSiege.SetPanelInfo(_city, _inviter, _invited);
+
+                //these should be always the last to run
                 GUIManager.Instance.PanelCity.HidePanel();
                 GUIManager.Instance.PanelSiege.ShowPanel();
-                GUIManager.Instance.PanelSiege.SetPanelInfo(_city, _inviter, _invited, cityDefenceDice);
                 
             }
             else

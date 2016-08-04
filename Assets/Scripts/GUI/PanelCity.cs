@@ -145,7 +145,7 @@ public class PanelCity : PanelParent
                             player.GetComponent<PhotonView>().RPC("ChangePlayMode", PhotonTargets.AllBufferedViaServer, GameData.TeamPlayMode.Attacking);
                         }
                     }
-                    GUIManager.Instance.PanelQuestion.OpenPanel(_askerCountry, _city);
+                    GUIManager.Instance.PanelQuestion.OpenPanel(_askerCountry, GameData.TeamCountry.___, _city);
                     HidePanel();
                 }
                 //TODO: for attack to make alliance need to find alliance and open that panel first

@@ -30,7 +30,7 @@ public class PlayerController : Photon.MonoBehaviour
     private List<GameData.City> _capturedCitiesAlly;
 
     [SerializeField]
-    private List<GameData.City> _capturedCitie;
+    private List<GameData.City> _capturedCities;
 
     //TODO: use this dictionary for adding cities that player cannot comeback for a couple of mins
     [SerializeField]
@@ -196,6 +196,11 @@ public class PlayerController : Photon.MonoBehaviour
         return _isAlone;
     }
 
+    public void SetIsAlone(bool value)
+    {
+        _isAlone = value;
+    }
+
     [PunRPC]
     public void ChangePlayMode(GameData.TeamPlayMode mode)
     {
@@ -209,7 +214,7 @@ public class PlayerController : Photon.MonoBehaviour
         if (isCorrectAnswer)
         {
             //add to captured city
-            _capturedCitie.Add(capturedCity);
+            _capturedCities.Add(capturedCity);
 
             //if captured the city alone
             if (IsAlone())
@@ -233,9 +238,23 @@ public class PlayerController : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void ChangePlayerStatusInvited(GameData.TeamCountry invited, GameData.TeamCountry inviter)
+    public void ChangePlayerStatusAllies(GameData.City capturedCity, int questionTrue)
     {
+        //add the city to captured with allies
+        _capturedCitiesAlly.Add(capturedCity);
 
+        //add the city to captured cities
+        _capturedCities.Add(capturedCity);
+
+        //add to answered question
+        _questionsTrue.Add(questionTrue);
+    }
+
+    [PunRPC]
+    public void ChangePlayerStatusInvited(GameData.TeamCountry invited, GameData.TeamCountry inviter, bool isSeigeBroken)
+    {
+        if (!isSeigeBroken)
+        {
             if (_myTeam == inviter)
             {
                 _myPlayMode = GameData.TeamPlayMode.Attacking;
@@ -249,7 +268,15 @@ public class PlayerController : Photon.MonoBehaviour
                 _isAlone = false;
                 _allies.Add(inviter);
             }
-
+        }
+        else
+        {
+            if (_myTeam == inviter || _myTeam == invited)
+            {
+                _myPlayMode = GameData.TeamPlayMode.Exploring;
+                _isAlone = true;
+            }
+        }
     }
 
     //send invitation to possible alliance
@@ -265,7 +292,7 @@ public class PlayerController : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city, int cityDefenceDice)
+    public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city)
     {
         //if this is my player and I was the country who sent the invitation for alliance
         if (photonView.isMine && _myTeam == inviter)
@@ -277,7 +304,7 @@ public class PlayerController : Photon.MonoBehaviour
                 GUIManager.Instance.PanelSiege.ShowPanel();
                 GUIManager.Instance.PanelInfo.ShowMessage(invited + " joined you. Now the city should defend itself.");
 
-                GUIManager.Instance.PanelSiege.SetPanelInfo(city, inviter, invited, cityDefenceDice);
+                GUIManager.Instance.PanelSiege.SetPanelInfo(city, inviter, invited);
             }
             //rejected
             else

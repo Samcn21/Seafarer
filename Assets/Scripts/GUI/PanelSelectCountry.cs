@@ -53,7 +53,7 @@ public class PanelSelectCountry : PanelParent
                 _chosenTeam = (GameData.TeamCountry)GameData.TeamCountry.Parse(typeof(GameData.TeamCountry), team, true);
 
                 GameManager.Instance.SetMyPlayer(_chosenTeam);
-                GUIManager.Instance.PanelConnectionStatus.playerTeam.text = GameManager.Instance.GetMyPlayer().ToString();
+                GUIManager.Instance.PanelConnectionStatus.playerTeam.text = GameManager.Instance.GetMyPlayerTeam().ToString();
 
                 //if already take then exit the function
                 if (_alreadyTakenCountry.Contains(_chosenTeam))

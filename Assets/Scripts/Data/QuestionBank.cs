@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [System.Serializable]
-public class QuestionBank : MonoBehaviour 
+public class QuestionBank : MonoBehaviour
 {
     private List<List<string>> questionBank = new List<List<string>>();
     [SerializeField]
@@ -19,7 +19,10 @@ public class QuestionBank : MonoBehaviour
     [SerializeField]
     private List<int> _result;
 
-	void Start () 
+    [SerializeField]
+    private List<int> _total;
+
+    void Start()
     {
         questionBank.Add(new List<string> 
         {
@@ -60,7 +63,7 @@ public class QuestionBank : MonoBehaviour
             "Der var så meget af krydderier, at det kostede næsten ingenting. ",
             "B"
         });
-
+        /*
         questionBank.Add(new List<string> 
         {
             "5",
@@ -121,6 +124,8 @@ public class QuestionBank : MonoBehaviour
             "C"
         });
 
+         */
+
         //finds the number of questions in the question bank
         _countOfQuestions = questionBank.Count;
         _questionsInBank = new int[_countOfQuestions];
@@ -129,97 +134,150 @@ public class QuestionBank : MonoBehaviour
         {
             _questionsInBank[i] = i + 1;
         }
-	}
+    }
 
-    public int GetCountOfQuestion() 
+    public int GetCountOfQuestion()
     {
         return _countOfQuestions;
     }
 
-    public List<string> GetOneQuestion(GameData.TeamCountry country, out int _questionNumber) 
+    [PunRPC]
+    public void SetRandomQuestionNumber(int randomNumber)
     {
-        //finding the player (the country) that requested for a question betwwen all players
-        foreach (GameObject player in GameManager.Instance.allPlayers)
+        _randomQuestionNumber = randomNumber;
+    }
+
+    public int GetRandomQuestionNumber()
+    {
+        return _randomQuestionNumber;
+    }
+
+    public List<string> GetOneQuestion(GameData.TeamCountry inviter, GameData.TeamCountry invited, GameData.City cityRef, out int questionNumber)
+    {
+        //singular attack
+        if (invited == GameData.TeamCountry.___)
         {
-            //this is the player who requested a question
-            if (player.GetComponent<PlayerController>().GetMyTeam() == country)
-            { 
-                //TODO:
-                //1. check if the country is alone or not
-                //if it is alone then check the list of questions that they've been asked for 
-                //else check the list of questions that they and their alliance have been asked for
-                //2. sum the country and their alliance questions
-                //3. substract the summary of asked questions from question bank;
-                //4. the result will be questions that never been asked from the country and its alliance if they have
-                //5. find a random question from the refined list 
-                //6. if there is no new question, give one of the olds randomly
-
-                if (player.GetComponent<PlayerController>().IsAlone())
+            //finding the player (inviter) that requested for a question betwwen all players
+            foreach (GameObject player in GameManager.Instance.allPlayers)
+            {
+                //this is the player who requested a question
+                if (player.GetComponent<PlayerController>().GetMyTeam() == inviter)
                 {
-                    List<int> total = player.GetComponent<PlayerController>().GetTotalQuestions(country);
-                    _result = _questionsInBank.Where(x => !total.Contains(x)).ToList();
+                    _total = player.GetComponent<PlayerController>().GetTotalQuestions(inviter);
 
-                    foreach (int i in total)
+                    if (_total.Count >= questionBank.Count)
                     {
-                        //Debug.Log("total = " + i);
-                    }
+                        //Debug.Log(_total.Count + ">=" + questionBank.Count);
 
-                    foreach (int i in _result)
-                    {
-                        //Debug.Log("result = " + i);
-                    }
-
-                    if (_result.Count != 0)
-                    {
-                        
-                        //pick a random number from the questions that the player never answered.
-                        _randomQuestionNumber = Random.Range(1, _result.Count + 1);
-
-                        //Debug.Log("result = " + _result.Count + "randomNum = " + _randomQuestionNumber);
-                    }
-                    else
-                    {
-                       
                         //means we ran out of questions and pick a random number from the qwhole uestions.
                         //TODO: make an alarm to report afterwards. plus we need to prevent total questions of players added by same number cause the question is not new anymore
                         _randomQuestionNumber = Random.Range(1, _questionsInBank.Length + 1);
-
-                        //Debug.Log(_questionsInBank.Length + " Length is  0 " + _randomQuestionNumber);
-
                     }
+                    else
+                    {
+                        //Debug.Log(_total.Count + "<=" + questionBank.Count);
 
+                        //pick a random number from the questions that the player never answered.
+                        _result = _questionsInBank.Where(x => !_total.Contains(x)).ToList();
+                        _randomQuestionNumber = Random.Range(1, _result.Count + 1);
+                    }
+                }
+            }
+        }
+        else
+        {
+            //finding the players (inviter and invited) that requested for a question between all players
+            foreach (GameObject player in GameManager.Instance.allPlayers)
+            {
+                if (player.GetComponent<PlayerController>().GetMyTeam() == inviter)
+                {
+                    _total.AddRange(player.GetComponent<PlayerController>().GetTotalQuestions(inviter));
+                }
+                if (player.GetComponent<PlayerController>().GetMyTeam() == invited)
+                {
+                    _total.AddRange(player.GetComponent<PlayerController>().GetTotalQuestions(invited));
+                }
 
+                if (_total.Count >= questionBank.Count)
+                {
+                    //TODO: find the team with less totalquestion.count and put it in total and take random
+                    _randomQuestionNumber = Random.Range(1, _questionsInBank.Length + 1);
+                    //TODO: in the end of attack we need to set from the city to 0
                 }
                 else
                 {
-                    //TODO: check the list of questions that player and their alliance have been asked for
+                    _result = _questionsInBank.Where(x => !_total.Contains(x)).ToList();
+
+                    _randomQuestionNumber = Random.Range(1, _result.Count + 1);
+                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, _randomQuestionNumber);
                 }
             }
         }
 
-            foreach (List<string> question in questionBank)
+        foreach (List<string> question in questionBank)
+        {
+            if (_total.Count >= questionBank.Count)
+            {
+                if (question[0] == _questionsInBank[_randomQuestionNumber - 1].ToString())
+                {
+                    Debug.Log("question number: " + question[0]);
+                    questionNumber = _questionsInBank[_randomQuestionNumber - 1];
+                    //TODO: set question number only for the invited and inviter team and clear it in the end.
+                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, questionNumber);
+                    //GetComponent<PhotonView>().RPC("ClearLists", PhotonTargets.All, inviter, invited);
+                    return question;
+                }
+            }
+            else
             {
                 if (question[0] == _result[_randomQuestionNumber - 1].ToString())
                 {
                     Debug.Log("question number: " + question[0]);
-                    _questionNumber = _result[_randomQuestionNumber - 1];
+                    questionNumber = questionNumber = _result[_randomQuestionNumber - 1];
+                    //TODO: set question number only for the invited and inviter team
+                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, questionNumber);
+                    //GetComponent<PhotonView>().RPC("ClearLists", PhotonTargets.All, inviter, invited);
                     return question;
-                    
                 }
             }
+        }
 
         Debug.Log("question returnd null, why?!");
 
-        _questionNumber = _randomQuestionNumber;
+        questionNumber = _randomQuestionNumber;
         return null;
     }
+
+    public List<string> GetInvitedQuestion(int questionNumber)
+    {
+        foreach (List<string> question in questionBank)
+        {
+            if (question[0] == questionNumber.ToString())
+            {
+                return question;
+            }
+        }
+        return null;
+    }
+
+
+    [PunRPC]
+    public void ClearLists(GameData.TeamCountry inviter, GameData.TeamCountry invited)
+    {
+        if (GameManager.Instance.GetMyPlayerTeam() == inviter | GameManager.Instance.GetMyPlayerTeam() == invited)
+        {
+            _total.Clear();
+            _result.Clear();
+        }
+    }
+
 
     public void Update()
     {
         if (Input.GetKeyDown("space"))
         {
             int rndQuestion;
-            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark, out rndQuestion))
+            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark, GameData.TeamCountry.___, GameData.City.Cario, out rndQuestion))
             {
                 Debug.Log(item + " - " + rndQuestion);
             }

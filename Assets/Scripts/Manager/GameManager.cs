@@ -212,9 +212,19 @@ public class GameManager : MonoBehaviour
         
     //}
 
-    public GameData.TeamCountry GetMyPlayer() 
+    public GameData.TeamCountry GetMyPlayerTeam() 
     {
         return _myPlayer;
+    }
+
+    public PlayerController GetMyPlayerController()
+    {
+        foreach (GameObject player in GetAllPlayers())
+        {
+            if (player.GetComponent<PlayerController>().GetMyTeam() == GetMyPlayerTeam())
+                return player.GetComponent<PlayerController>();
+        }
+        return null;
     }
 
     public void SetMyPlayer(GameData.TeamCountry value)
