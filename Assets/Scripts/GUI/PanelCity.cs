@@ -1,23 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class PanelCity : MonoBehaviour, IPanelControl
+public class PanelCity : PanelParent
 {
-    [SerializeField]    
+    [SerializeField]
     private GameObject panelCity;
 
-    [SerializeField] 
+    [SerializeField]
     private Text CityName;
+
+    [SerializeField]
+    private Text CityOwner;
+
+    [SerializeField]
+    private Text CityInfo;
+
+    [SerializeField]
+    private Text CityDefence;
 
     [SerializeField]
     private Button btnAttack;
 
     [SerializeField]
+    private Button[] btnAlliances;
+
+    [SerializeField]
     private GameData.TeamCountry _askerCountry;
 
     [SerializeField]
+    private GameData.TeamCountry _chosenAlliance;
+
+    [SerializeField]
     private GameData.City _city;
+
+    [SerializeField]
+    private List<GameData.TeamCountry> _possibleAlliances;
 
     void Awake()
     {
@@ -25,39 +44,86 @@ public class PanelCity : MonoBehaviour, IPanelControl
             Debug.LogError("panelCity is not found!");
     }
 
-    public void ShowPanel()
+    public override void HidePanel()
     {
-        panelCity.GetComponent<CanvasGroup>().alpha = 1;
-        panelCity.GetComponent<CanvasGroup>().interactable = true;
-        GameManager.Instance.SetPlayerInteract(false);
-    }
+        GetComponent<CanvasGroup>().alpha = 0;
+        GetComponent<CanvasGroup>().interactable = false;
 
-    public void HidePanel()
-    {
-        panelCity.GetComponent<CanvasGroup>().alpha = 0;
-        panelCity.GetComponent<CanvasGroup>().interactable = false;
-        GameManager.Instance.SetPlayerInteract(true);
+        foreach (Button btn in btnAlliances)
+        {
+            btn.interactable = false;
+            btn.GetComponent<Image>().enabled = false;
+        }
     }
 
     public void OpenPanel(GameData.City cityName, GameData.TeamCountry askerCountry)
     {
         ShowPanel();
-        CityName.text = cityName.ToString();
+        string cityNameStatus = cityName.ToString();
         _city = cityName;
         _askerCountry = askerCountry;
 
+
         foreach (GameObject city in GameManager.Instance.allCities)
         {
-            //if city is under attack or under siege disable the attack button
-            if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.UnderAttack || city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.UnderSiege)
+            CityController CityController = city.GetComponent<CityController>();
+            if (CityController.GetCityName() == _city)
             {
-                btnAttack.enabled = false;
+                CityDefence.text = CityController.GetCityDefence().ToString();
+
+                //if city is under attack or under siege disable the attack button
+                if (CityController.GetCityDefenceStatus() == GameData.DefenceStatus.UnderAttack)
+                {
+                    btnAttack.enabled = false;
+                    btnAttack.GetComponent<Image>().enabled = false;
+                    CityInfo.text = "The city is under attack by other countries now, come back later!";
+                    cityNameStatus += " is under attack";
+                }
+                else if (CityController.GetCityDefenceStatus() == GameData.DefenceStatus.UnderSiege)
+                {
+                    btnAttack.enabled = false;
+                    btnAttack.GetComponent<Image>().enabled = false;
+                    CityInfo.text = "The city is under siege by other countries now, come back later!";
+                    cityNameStatus += " is under siege";
+                }
+                else
+                {
+                    //TODO: check if the city occupied by two countries including the asker country, it must say
+                    //you can make alliance and attack to a city that you already captured!
+                    btnAttack.enabled = true;
+                    btnAttack.GetComponent<Image>().enabled = true;
+                    CityInfo.text = "";
+                }
+
+                //city has no owner means it's neutral or after event became neutral again!
+                if (CityController.GetCityOwners().Count == 0)
+                {
+                    CityOwner.text = "Neutral City";
+                }
+                //city has one owner
+                else if (CityController.GetCityOwners().Count == 1)
+                {
+                    foreach (GameData.TeamCountry owner in CityController.GetCityOwners())
+                    {
+                        CityOwner.text = "Current Owner: " + owner.ToString();
+                    }
+                }
+                //city has multiple owner
+                else
+                {
+                    CityOwner.text = "Current Owners: ";
+                    foreach (GameData.TeamCountry owner in CityController.GetCityOwners())
+                    {
+                        CityOwner.text += owner.ToString() + " ";
+                    }
+                }
+
             }
         }
-
+        CityName.text = cityNameStatus;
     }
 
-    public void Attack() 
+    public void Attack()
     {
         //find the selected city between all cities
         foreach (GameObject city in GameManager.Instance.allCities)
@@ -65,27 +131,100 @@ public class PanelCity : MonoBehaviour, IPanelControl
             //finding the clicked city between all cities
             if (city.GetComponent<CityController>().GetCityName() == _city)
             {
-                //check if city is neutral and free
+                //check if city is free and neutral ---> singular attack
                 if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.Free && city.GetComponent<CityController>().GetCityStatus() == GameData.CityStatus.Neutral)
                 {
                     //change city status to under attack in all network
                     city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderAttack);
-                    //TODO: change player status from exploring to attacking
 
-                    //TODO (Singular attack):
-                    //4.  HidePanel(); and open question panel
-                    GUIManager.Instance.PanelQuestion.OpenPanel(_askerCountry, _city);
+                    //change player mode from exploring to attacking
+                    foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+                    {
+                        if (player.GetComponent<PlayerController>().GetMyTeam() == _askerCountry)
+                        {
+                            player.GetComponent<PhotonView>().RPC("ChangePlayMode", PhotonTargets.AllBufferedViaServer, GameData.TeamPlayMode.Attacking);
+                        }
+                    }
+                    GUIManager.Instance.PanelQuestion.OpenPanel(_askerCountry, GameData.TeamCountry.___, _city);
                     HidePanel();
                 }
+                //TODO: for attack to make alliance need to find alliance and open that panel first
+                //check if city is free and occupied by one team ---> make alliance then attack
+                else if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.Free && city.GetComponent<CityController>().GetCityStatus() == GameData.CityStatus.OccupiedByOneCountry)
+                {
+                    btnAttack.enabled = false;
+                    btnAttack.GetComponent<Image>().enabled = false;
+                    CityInfo.fontSize = 12;
+                    if (!city.GetComponent<CityController>().GetCityOwners().Contains(_askerCountry))
+                    {
+                        CityInfo.text = "You cannot attack this city alone, you need to make an alliance first with one of the teams in the below";
+                    }
+                    else 
+                    {
+                        CityInfo.text = "You are the owner of this city, you cannot attack a city of yours!";
+                    }
+                    FindInActionRangePlayers(city);
+                }
+                //TODO: for attack to make alliance need to find alliance and open that panel first
+                //check if city is free and occupied by two teams ---> make alliance then attack if my country is not one of the owners
+                else if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.Free && city.GetComponent<CityController>().GetCityStatus() == GameData.CityStatus.OccupiedByAllies)
+                {
+                    FindInActionRangePlayers(city);
+                }
+
             }
         }
 
     }
 
+    //this method is invoked only by Onclick() function when player wants to make alliance
+    public void ChosenAlliance(string team)
+    {
+        //hide all after choosing a country for alliance
+        foreach (Button btnAlliance in btnAlliances)
+        {
+            btnAlliance.interactable = false;
+        }
+
+        //converting chosen country from string to enum which saved in GameData Class
+        if (GameData.TeamCountry.IsDefined(typeof(GameData.TeamCountry), team))
+        {
+            _chosenAlliance = (GameData.TeamCountry)GameData.TeamCountry.Parse(typeof(GameData.TeamCountry), team, true);
+
+            foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+            {
+                player.GetComponent<PhotonView>().RPC("InviteAlliance", PhotonTargets.Others, _chosenAlliance, _askerCountry, _city);
+            }
+        }
+    }
+
+    //find all players that have this city in their action range except me
     [PunRPC]
-    private void CityStatus()
-    { 
-        //TODO:
-        //before a team attack they need to update the city status on their machine too 
+    private void FindInActionRangePlayers(GameObject city)
+    {
+        //search for all players in city's action range
+        foreach (GameData.TeamCountry player in city.GetComponent<CityController>().GetPlayersInActionRange())
+        {
+            if (!city.GetComponent<CityController>().GetCityOwners().Contains(_askerCountry))
+            {
+                //Debug.Log(player);
+                if (player != _askerCountry && !city.GetComponent<CityController>().GetCityOwners().Contains(player))
+                {
+                    //Debug.Log("filtered: " + player);
+                    foreach (Button btnAlliance in btnAlliances)
+                    {
+                        if (btnAlliance.name.Contains(player.ToString()))
+                        {
+                            btnAlliance.interactable = true;
+                            btnAlliance.GetComponent<Image>().enabled = true;
+                        }
+                    }
+                }
+            }
+            else 
+            {
+            //  
+            }
+        }
     }
 }

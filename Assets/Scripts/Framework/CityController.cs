@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class CityController : MonoBehaviour 
+public class CityController : MonoBehaviour
 {
     [SerializeField]
     private GameData.City _cityName;
@@ -28,12 +28,18 @@ public class CityController : MonoBehaviour
     private int _defence;
 
     [SerializeField]
+    private int _cityDiceNumber = 0;
+
+    [SerializeField]
     private GameData.DefenceStatus _defenceStatus;
 
     [SerializeField]
     private float _pointsPerMinute = 2;
 
-	void Start () 
+    [SerializeField]
+    private List<GameData.TeamCountry> _playersInActionRange = new List<GameData.TeamCountry>();
+
+    void Start()
     {
         _defence = 1;
 
@@ -51,11 +57,16 @@ public class CityController : MonoBehaviour
             _isPlayerCapital = false;
         }
 
-	}
+    }
 
-    public GameData.City GetCityName() 
+    public GameData.City GetCityName()
     {
         return _cityName;
+    }
+
+    public int GetCityDefence()
+    {
+        return _defence;
     }
 
     public GameData.CityStatus GetCityStatus()
@@ -68,9 +79,63 @@ public class CityController : MonoBehaviour
         return _cityOwners;
     }
 
-    public GameData.DefenceStatus GetCityDefenceStatus() 
+    public GameData.DefenceStatus GetCityDefenceStatus()
     {
         return _defenceStatus;
+    }
+
+    //retrun players in range
+    public List<GameData.TeamCountry> GetPlayersInActionRange()
+    {
+        return _playersInActionRange;
+    }
+
+    //When a player enters city's action range
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            if (!_cityOwners.Contains(other.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                //check if the player is not already in the list, then add it.
+                if (!_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+                {
+                    this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), true);
+                }
+            }
+        }
+    }
+
+    //When a player exits city's action range
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            if (!_cityOwners.Contains(other.GetComponent<PlayerController>().GetMyTeam()))
+            {
+                //check if the player is not already in the list, then remove it.
+                if (_playersInActionRange.Contains(other.gameObject.GetComponent<PlayerController>().GetMyTeam()))
+                {
+                    this.GetComponent<PhotonView>().RPC("SetPlayersInActionRange", PhotonTargets.All, other.gameObject.GetComponent<PlayerController>().GetMyTeam(), false);
+                }
+            }
+        }
+    }
+
+    //set action range in the network
+    [PunRPC]
+    public void SetPlayersInActionRange(GameData.TeamCountry value, bool isAdding)
+    {
+        if (isAdding)
+        {
+            if (!_playersInActionRange.Contains(value))
+                _playersInActionRange.Add(value);
+        }
+        else
+        {
+            if (_playersInActionRange.Contains(value))
+                _playersInActionRange.Remove(value);
+        }
     }
 
     [PunRPC]
@@ -78,6 +143,40 @@ public class CityController : MonoBehaviour
     {
         _defenceStatus = value;
     }
+
+    [PunRPC]
+    public void SetCityDiceNumber(int cityDiceNumber) 
+    {
+        _cityDiceNumber = cityDiceNumber;
+    }
+
+    public int GetCityDiceNumber()
+    {
+        return _cityDiceNumber;
+    }
+
+    [PunRPC]
+    public void ChangeCityStatusAllies(GameData.TeamCountry cityOwnerInviter, GameData.TeamCountry cityOwnerInvited, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus)
+    {
+        //remove previous owner
+        _cityOwners.Clear();
+
+        //add invited and inviter!
+        _cityOwners.Add(cityOwnerInviter);
+        _cityOwners.Add(cityOwnerInvited);
+
+        //occupied by two country makes the defence 3 //more info --> Game Designer
+        _defence = 3;
+                
+        _cityDiceNumber = 0;
+
+        //city is free (other teams can attack)
+        _defenceStatus = defenceStatus;
+
+        //occupied by allies
+        _cityStatus = cityStatus;
+    }
+    
 
     [PunRPC]
     public void ChangeCityStatus(GameData.TeamCountry cityOwner, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus, bool isCorrectAnswer)
@@ -100,9 +199,15 @@ public class CityController : MonoBehaviour
             //change defence status
             _defenceStatus = defenceStatus;
 
+            //remove from city action range
+            if (_playersInActionRange.Contains(cityOwner))
+            {
+                _playersInActionRange.Remove(cityOwner);
+            }
+
         }
         else
-        { 
+        {
             //TODO: add to forbiden country dictionary for a few minutes.
 
             //change defence status

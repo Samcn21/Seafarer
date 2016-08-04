@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class PanelPinCode : MonoBehaviour, IPanelControl
+public class PanelPinCode : PanelParent
 {
 
     public GameObject panelPinCode;
@@ -56,17 +56,4 @@ public class PanelPinCode : MonoBehaviour, IPanelControl
         btnPinCodeEnter.interactable = true;
     }
 
-    public void ShowPanel()
-    {
-        panelPinCode.GetComponent<CanvasGroup>().alpha = 1;
-        panelPinCode.GetComponent<CanvasGroup>().interactable = true;
-        GameManager.Instance.SetPlayerInteract(false);
-    }
-
-    public void HidePanel()
-    {
-        panelPinCode.GetComponent<CanvasGroup>().alpha = 0;
-        panelPinCode.GetComponent<CanvasGroup>().interactable = false;
-        GameManager.Instance.SetPlayerInteract(true);
-    }
 }

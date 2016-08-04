@@ -2,13 +2,17 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class PanelConnectionStatus : MonoBehaviour, IPanelControl
+public class PanelConnectionStatus : PanelParent
 {
     public GameObject panelConnectionStatus;
     public Text internetStatus;
     public Text GPSStatus;
     public Text networkConStatus;
     public Text networkStatus;
+    public Text playerTeam;
+    public Button testButton;
+    public Text testText;
+
 
     void Awake()
     {
@@ -23,19 +27,32 @@ public class PanelConnectionStatus : MonoBehaviour, IPanelControl
 
         if (!networkStatus)
             Debug.LogError("NetworkStatus is not found!");
+
+        if (!playerTeam)
+            Debug.LogError("playerTeam is not found!");
     }
 
-    public void ShowPanel()
+    public void ShowTest()
     {
-        panelConnectionStatus.GetComponent<CanvasGroup>().alpha = 1;
-        panelConnectionStatus.GetComponent<CanvasGroup>().interactable = true;
-        GameManager.Instance.SetPlayerInteract(false);
-    }
+        string text = string.Empty;
+        //foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        //{
+        //    if (player.GetComponent<PlayerController>().GetMyTeam() == GameManager.Instance.GetMyPlayer())
+        //    {
+        //        foreach (GameData.TeamCountry ally in player.GetComponent<PlayerController>().Allies())
+        //        {
+        //            text += ally.ToString() + " ,";
+        //        }
+        //    }
+        //}
+        foreach (GameObject city in GameManager.Instance.allCities)
+        {
+            if (city.GetComponent<CityController>().GetCityDefenceStatus() == GameData.DefenceStatus.UnderSiege)
+            {
+                text += city.name + " ,";
+            }
+        }
 
-    public void HidePanel()
-    {
-        panelConnectionStatus.GetComponent<CanvasGroup>().alpha = 0;
-        panelConnectionStatus.GetComponent<CanvasGroup>().interactable = false;
-        GameManager.Instance.SetPlayerInteract(true);
+        GUIManager.Instance.PanelConnectionStatus.testText.text = GameManager.Instance.QuestionBank.GetRandomQuestionNumber().ToString();
     }
 }
