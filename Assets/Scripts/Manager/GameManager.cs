@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     //References
     public QuestionBank QuestionBank;
-    public RollDice RollDice;
+    public TimeController TimeController;
 
     private static GameManager _instance = null;
     public static GameManager Instance
@@ -41,17 +41,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private byte _minTeams = 4;
 
-    [Range(1, 60)]
-    [SerializeField]
-    private float _gameplayDuration = 20;
-    private float _gameplayDurationSeconds = 1200;
 
-    [SerializeField]
-    private bool _hasGameEvents = true;
-
-    [SerializeField]
-    private float _gameEventPeriod = 5;
-    private float _gameEventPeriodSeconds = 300;
 
     //Screen Measurements
     [SerializeField]
@@ -74,7 +64,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameData.TeamCountry _myPlayer;
 
-    [SerializeField]
     private bool _canPlayerInteract = true;
 
     [SerializeField]
