@@ -314,4 +314,13 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void SetRandomQuestionNumber(int randomNumber, GameData.TeamCountry invited)
+    {
+        Debug.Log("SetRandomQuestionNumber " + GameManager.Instance.GetMyPlayerTeam());
+        if (photonView.isMine && _myTeam == invited)
+        {
+            GameManager.Instance.QuestionBank.SetRandomQuestionNumber(randomNumber);
+        }
+    }
 }

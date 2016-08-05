@@ -22,8 +22,15 @@ public class QuestionBank : MonoBehaviour
     [SerializeField]
     private List<int> _total;
 
+    [SerializeField]
+    private GameData.TeamCountry _invited;
+
+    [SerializeField]
+    private GameData.TeamCountry _inviter;
+
     void Start()
     {
+
         questionBank.Add(new List<string> 
         {
             "1",
@@ -43,7 +50,7 @@ public class QuestionBank : MonoBehaviour
             "Dyre vine ",
             "A"
         });
-
+       
         questionBank.Add(new List<string> 
         {
             "3",
@@ -63,7 +70,7 @@ public class QuestionBank : MonoBehaviour
             "Der var så meget af krydderier, at det kostede næsten ingenting. ",
             "B"
         });
-        /*
+        
         questionBank.Add(new List<string> 
         {
             "5",
@@ -93,38 +100,38 @@ public class QuestionBank : MonoBehaviour
             "De flest troede den var flad, men der var også en del, som mente, at den var rund. ",
             "B"
         });
+        
+       questionBank.Add(new List<string> 
+       {
+           "8",
+           "Hvad troede man, der ville ske, hvis søfolk sejlede for langt i én retning? ",
+           "at man ville falde i afgrunden. ",
+           "At man kom i helvede",
+           "At man kom i Skærsilden, hvor man først skulle renses for sine synder, inden man kom videre i paradis. ",
+           "A"
+       });
+        
+       questionBank.Add(new List<string> 
+       {
+           "9",
+           "Man havde bl.a. overtroiske forestillinger om, hvad der var i havenes afgrunde? Hvilke? ",
+           "Det var helvede, hvor man blev pint. ",
+           "Fantastiske væsener som enhjørning og fabeldyr. ",
+           "Der var fyldt med giftige slanger",
+           "B"
+       });
 
-        questionBank.Add(new List<string> 
-        {
-            "8",
-            "Hvad troede man, der ville ske, hvis søfolk sejlede for langt i én retning? ",
-            "at man ville falde i afgrunden. ",
-            "At man kom i helvede",
-            "At man kom i Skærsilden, hvor man først skulle renses for sine synder, inden man kom videre i paradis. ",
-            "A"
-        });
+       questionBank.Add(new List<string> 
+       {
+           "10",
+           "Hvad for nogle rigdomme var man ude efter? Nævn dem. ",
+           "Slaver ",
+           "Man var efter de indfødtes våben.",
+           "Guld, sølv og krydderier som peber, ingefær, kanel , nellike m.m.",
+           "C"
+       });
+       
 
-        questionBank.Add(new List<string> 
-        {
-            "9",
-            "Man havde bl.a. overtroiske forestillinger om, hvad der var i havenes afgrunde? Hvilke? ",
-            "Det var helvede, hvor man blev pint. ",
-            "Fantastiske væsener som enhjørning og fabeldyr. ",
-            "Der var fyldt med giftige slanger",
-            "B"
-        });
-
-        questionBank.Add(new List<string> 
-        {
-            "10",
-            "Hvad for nogle rigdomme var man ude efter? Nævn dem. ",
-            "Slaver ",
-            "Man var efter de indfødtes våben.",
-            "Guld, sølv og krydderier som peber, ingefær, kanel , nellike m.m.",
-            "C"
-        });
-
-         */
 
         //finds the number of questions in the question bank
         _countOfQuestions = questionBank.Count;
@@ -141,9 +148,9 @@ public class QuestionBank : MonoBehaviour
         return _countOfQuestions;
     }
 
-    [PunRPC]
     public void SetRandomQuestionNumber(int randomNumber)
     {
+        Debug.Log(GameManager.Instance.GetMyPlayerTeam());
         _randomQuestionNumber = randomNumber;
     }
 
@@ -152,8 +159,13 @@ public class QuestionBank : MonoBehaviour
         return _randomQuestionNumber;
     }
 
-    public List<string> GetOneQuestion(GameData.TeamCountry inviter, GameData.TeamCountry invited, GameData.City cityRef, out int questionNumber)
+    public List<string> GetOneQuestion(GameData.TeamCountry inviter, GameData.TeamCountry invited, out int questionNumber)
     {
+        _inviter = inviter;
+        _invited = invited;
+
+        //SendTheQuestionNumber(0, _invited);
+
         //singular attack
         if (invited == GameData.TeamCountry.___)
         {
@@ -209,7 +221,7 @@ public class QuestionBank : MonoBehaviour
                     _result = _questionsInBank.Where(x => !_total.Contains(x)).ToList();
 
                     _randomQuestionNumber = Random.Range(1, _result.Count + 1);
-                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, _randomQuestionNumber);
+                    //GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, _randomQuestionNumber);
                 }
             }
         }
@@ -218,24 +230,24 @@ public class QuestionBank : MonoBehaviour
         {
             if (_total.Count >= questionBank.Count)
             {
+                Debug.Log("if");
                 if (question[0] == _questionsInBank[_randomQuestionNumber - 1].ToString())
                 {
                     Debug.Log("question number: " + question[0]);
                     questionNumber = _questionsInBank[_randomQuestionNumber - 1];
-                    //TODO: set question number only for the invited and inviter team and clear it in the end.
-                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, questionNumber);
+                    SendTheQuestionNumber(questionNumber, invited);
                     //GetComponent<PhotonView>().RPC("ClearLists", PhotonTargets.All, inviter, invited);
                     return question;
                 }
             }
             else
             {
+                Debug.Log("else");
                 if (question[0] == _result[_randomQuestionNumber - 1].ToString())
                 {
                     Debug.Log("question number: " + question[0]);
                     questionNumber = questionNumber = _result[_randomQuestionNumber - 1];
-                    //TODO: set question number only for the invited and inviter team
-                    GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, questionNumber);
+                    SendTheQuestionNumber(questionNumber, invited);
                     //GetComponent<PhotonView>().RPC("ClearLists", PhotonTargets.All, inviter, invited);
                     return question;
                 }
@@ -248,6 +260,14 @@ public class QuestionBank : MonoBehaviour
         return null;
     }
 
+    public void SendTheQuestionNumber(int questionNumber, GameData.TeamCountry invited)
+    {
+        _randomQuestionNumber = questionNumber;
+        foreach (GameObject player in GameManager.Instance.GetAllPlayers())
+        {
+            player.GetComponent<PhotonView>().RPC("SetRandomQuestionNumber", PhotonTargets.All, questionNumber, invited);
+        }
+    }
     public List<string> GetInvitedQuestion(int questionNumber)
     {
         foreach (List<string> question in questionBank)
@@ -277,7 +297,7 @@ public class QuestionBank : MonoBehaviour
         if (Input.GetKeyDown("space"))
         {
             int rndQuestion;
-            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark, GameData.TeamCountry.___, GameData.City.Cario, out rndQuestion))
+            foreach (string item in GetOneQuestion(GameData.TeamCountry.Denmark, GameData.TeamCountry.___, out rndQuestion))
             {
                 Debug.Log(item + " - " + rndQuestion);
             }

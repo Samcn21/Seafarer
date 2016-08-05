@@ -120,8 +120,8 @@ public class PanelQuestion : PanelParent
     }
     public void OpenPanel(GameData.TeamCountry inviter, GameData.TeamCountry invited, GameData.City refCity)
     {
-        ShowPanel();
 
+        ShowPanel();
         if (invited != GameData.TeamCountry.___)
             _isAllianceQuestion = true;
 
@@ -129,11 +129,12 @@ public class PanelQuestion : PanelParent
         _inviter = inviter;
         _invited = invited;
 
+                
         //only inviter comes here and ask the question!
-        theQuestion = GameManager.Instance.QuestionBank.GetOneQuestion(inviter, invited, refCity, out _questionNumber);
+        theQuestion = GameManager.Instance.QuestionBank.GetOneQuestion(inviter, invited, out _questionNumber);
 
         //return a question
-        UnpackTheQuestion(theQuestion, inviter, GameManager.Instance.QuestionBank.GetRandomQuestionNumber());
+        UnpackTheQuestion(theQuestion, inviter, _questionNumber);
     }
 
     public void OpenPanelInvited(GameData.TeamCountry inviter, GameData.TeamCountry invited, GameData.City refCity)
@@ -143,10 +144,12 @@ public class PanelQuestion : PanelParent
         _refCity = refCity;
         _inviter = inviter;
         _invited = invited;
-        //inviter already find the common question and sent to the network, Invited needs to get the question only
-        theQuestion = GameManager.Instance.QuestionBank.GetInvitedQuestion(GameManager.Instance.QuestionBank.GetRandomQuestionNumber());
+        _questionNumber = GameManager.Instance.QuestionBank.GetRandomQuestionNumber();
 
-        UnpackTheQuestion(theQuestion, invited, GameManager.Instance.QuestionBank.GetRandomQuestionNumber());
+        //inviter already find the common question and sent to the network, Invited needs to get the question only
+        theQuestion = GameManager.Instance.QuestionBank.GetInvitedQuestion(_questionNumber);
+
+        UnpackTheQuestion(theQuestion, invited, _questionNumber);
         //city.GetComponent<PhotonView>().RPC("SetCityStatus", PhotonTargets.All, GameData.DefenceStatus.UnderAttack);
     }
 
@@ -201,7 +204,10 @@ public class PanelQuestion : PanelParent
     public void AnswerQuestion(string answer)
     {
         if (GameManager.Instance.GetMyPlayerTeam() == _inviter)
+        { 
             GetComponent<PhotonView>().RPC("InviterInvitedAnswer", PhotonTargets.All, answer, _inviter);
+            GameManager.Instance.QuestionBank.SendTheQuestionNumber(0, _invited); //set the question number to 0 for inviter and invited to avoid same question for the next round alliance
+        }
 
         if (GameManager.Instance.GetMyPlayerTeam() == _invited)
             GetComponent<PhotonView>().RPC("InviterInvitedAnswer", PhotonTargets.All, answer, _invited);
@@ -292,8 +298,8 @@ public class PanelQuestion : PanelParent
         refCityGO.GetComponent<PhotonView>().RPC("ChangeCityStatusAllies", PhotonTargets.All, _inviter, _invited, GameData.CityStatus.OccupiedByAllies, GameData.DefenceStatus.Free);
 
         //nothing from player would change due to wrong answer
-        inviterGO.GetComponent<PhotonView>().RPC("ChangePlayerStatusAllies", PhotonTargets.All, _refCity, GameManager.Instance.QuestionBank.GetRandomQuestionNumber());
-        invitedGO.GetComponent<PhotonView>().RPC("ChangePlayerStatusAllies", PhotonTargets.All, _refCity, GameManager.Instance.QuestionBank.GetRandomQuestionNumber());
+        inviterGO.GetComponent<PhotonView>().RPC("ChangePlayerStatusAllies", PhotonTargets.All, _refCity, _questionNumber);
+        invitedGO.GetComponent<PhotonView>().RPC("ChangePlayerStatusAllies", PhotonTargets.All, _refCity, _questionNumber);
 
         //change play mode (explore/attack) and isAlone
         inviterGO.GetComponent<PhotonView>().RPC("ChangePlayerStatusInvited", PhotonTargets.All, _invited, _inviter, true);

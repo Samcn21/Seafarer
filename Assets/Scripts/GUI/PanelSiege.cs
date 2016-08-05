@@ -35,8 +35,10 @@ public class PanelSiege : PanelParent
     [SerializeField]
     private int _myDiceNumber = 0;
 
+    [SerializeField]
     private bool _canRollDice;
 
+    [SerializeField]
     private bool _canInvitedSeeMsg;
 
     void Awake()
@@ -50,8 +52,7 @@ public class PanelSiege : PanelParent
     {
         base.ShowPanel();
         _canRollDice = true;
-
-
+        //_canInvitedSeeMsg = false;
     }
 
     [PunRPC]
