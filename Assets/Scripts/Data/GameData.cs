@@ -109,6 +109,15 @@ public class GameData
         Asia20
     }
 
+    public enum DiceType
+    { 
+        Coin,
+        SixSided,
+        TenSided,
+        TweleveSided,
+        TwentySided
+    }
+
     public static Dictionary<TeamCountry, City> TeamCC = new Dictionary<TeamCountry, City>() 
         {
             {TeamCountry.Denmark,   City.Copenhagen  },

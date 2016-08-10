@@ -73,7 +73,7 @@ public class PanelSiege : PanelParent
 
     private int GetMyDiceNumber()
     {
-        _myDiceNumber = Random.Range(1, 11);
+        _myDiceNumber = GameManager.Instance.DiceController.GetPlayerDiceNumber();
         return _myDiceNumber;
     }
 

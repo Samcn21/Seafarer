@@ -28,6 +28,8 @@ public class Instantiate : MonoBehaviour {
             GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(chosenCountry.ToString(), mySpawnSpot.gameObject.transform.position, Quaternion.identity, 0);
             ((MonoBehaviour)myPlayer.GetComponent("PlayerController")).enabled = true;
             ((MonoBehaviour)myPlayer.GetComponent("InputController")).enabled = true;
+            ((MonoBehaviour)myPlayer.GetComponent("FogOfWarUnit")).enabled = true;
+
 
             //if we use camera zoom in/out or 3D
             //myPlayer.transform.FindChild("Main Camera").gameObject.SetActive(true);

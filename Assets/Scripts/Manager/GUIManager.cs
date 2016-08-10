@@ -44,7 +44,7 @@ public class GUIManager : MonoBehaviour
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject.transform.parent);
+        //DontDestroyOnLoad(gameObject.transform.parent);
 
         if (!PanelPinCode)
             Debug.LogError("PanelPinCode not found");

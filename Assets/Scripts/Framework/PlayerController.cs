@@ -9,13 +9,11 @@ public class PlayerController : Photon.MonoBehaviour
     [SerializeField]
     private GameData.TeamCountry _myTeam;
 
-
-
     [SerializeField]
     private GameData.TeamPlayMode _myPlayMode = GameData.TeamPlayMode.Exploring;
 
     [SerializeField]
-    private int _myTotalPoints = 0;
+    private float _myTotalPoints = 0;
 
     [SerializeField]
     private bool _isAlone;
@@ -66,13 +64,41 @@ public class PlayerController : Photon.MonoBehaviour
         }
 
         //get the radius from game manager based on map size
-        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
+        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetPlayerActionRange();
+        this.GetComponent<FogOfWarUnit>().radius = GameManager.Instance.GetPlayerFOWRadius();
 
         //in the beginning the country is alone:
         _isAlone = true;
 
         //Debug.Log(FindCurrentAlly());
     }
+
+    void Update()
+    {
+        Debug.Log(PhotonNetwork.playerName + " : " + PhotonNetwork.player.name + " : " + PhotonNetwork.player.ID + " : " + PhotonNetwork.player.isLocal);
+
+        //PhotonNetwork.playerName will return the name of the local player.
+
+        //PhotonPlayer.name will also return the name of the local player.
+
+        //PhotonNetwork.player.name will also return the name of the local player.
+
+        //PhotonNetwork.player.ID will return the ID of the local player.
+
+        //PhotonNetwork.player.isLocal will return if the player is the local player.
+
+        if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
+        {
+            if (GameManager.Instance.CanPlayerInteract())
+            {
+                //Debug.Log( GameManager.Instance.CanPlayerInteract());
+                this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
+                this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
+            }
+
+        }
+    }
+
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
         _myTeam = team;
@@ -143,19 +169,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
-        {
-            if (GameManager.Instance.CanPlayerInteract())
-            {
-                //Debug.Log( GameManager.Instance.CanPlayerInteract());
-                this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
-                this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
-            }
 
-        }
-    }
 
 
 
@@ -322,5 +336,19 @@ public class PlayerController : Photon.MonoBehaviour
         {
             GameManager.Instance.QuestionBank.SetRandomQuestionNumber(randomNumber);
         }
+    }
+
+    [PunRPC]
+    public void SetMyTotalPoints(float points, GameData.TeamCountry country) 
+    {
+        if (photonView.isMine && _myTeam == country)
+        {
+            _myTotalPoints += points;
+        }
+    }
+
+    public int GetMyTotalPoints()
+    {
+        return (int)_myTotalPoints;
     }
 }

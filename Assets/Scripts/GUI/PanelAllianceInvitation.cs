@@ -38,7 +38,7 @@ public class PanelAllianceInvitation : PanelParent
 
     private int GetCityDefence()
     {
-        _cityDiceNumber = Random.Range(1 , 2);
+        _cityDiceNumber = GameManager.Instance.DiceController.GetCityDiceNumber();
         return _cityDiceNumber;
     }
 

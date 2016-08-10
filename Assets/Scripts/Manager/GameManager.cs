@@ -8,15 +8,10 @@ public class GameManager : MonoBehaviour
     //References
     public QuestionBank QuestionBank;
     public TimeController TimeController;
+    public DiceController DiceController;
 
     private static GameManager _instance = null;
-    public static GameManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
+    public static GameManager Instance { get { return _instance; } }
 
     //Technical options
     [SerializeField]
@@ -27,6 +22,7 @@ public class GameManager : MonoBehaviour
     private bool _onlinePhoton = true;
     [SerializeField]
     private bool _hasPinCodePanel = true;
+
 
 
 
@@ -44,6 +40,9 @@ public class GameManager : MonoBehaviour
 
 
     //Screen Measurements
+    public Camera mainCamera;
+    [SerializeField]
+    private bool _fogOfWar = true;
     [SerializeField]
     private int _screenHight;
     [SerializeField]
@@ -54,37 +53,37 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float _minCameraSize = 45f;
     [SerializeField]
-    private float _maxCameraSize = 45f;
-    public Camera mainCamera;
+    private float _maxCameraSize = 60f;
 
     //Game Objects in the scene
     [SerializeField]
-    private float _playerSpeed;
-
-    [SerializeField]
     private GameData.TeamCountry _myPlayer;
-
-    private bool _canPlayerInteract = true;
-
+    [SerializeField]
+    private float _playerSpeed;
     [SerializeField]
     private float _playerActionRange;
+    [SerializeField]
+    private float _playerFOWRadius;
+    private bool _canPlayerInteract = true;
+    public GameObject[] allPlayers;
+
 
     [SerializeField]
     private float _cityActionRange;
-
-    public GameObject[] allPlayers;
     public GameObject[] allCities;
 
+
+    private float timer;
     void Awake()
     {
-        
+
         if (_instance)
         {
             DestroyImmediate(this);
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject.transform.parent);
+        //DontDestroyOnLoad(gameObject.transform.parent);
 
         if (!_onlinePhoton)
         {
@@ -92,7 +91,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start() 
+    void Start()
     {
         _screenHight = Screen.height;
         _screenWidth = Screen.width;
@@ -103,25 +102,29 @@ public class GameManager : MonoBehaviour
             mainCamera.orthographicSize = _minCameraSize;
             _currentCameraSize = _minCameraSize;
         }
-        else 
+        else
         {
             mainCamera.orthographicSize = _maxCameraSize;
             _currentCameraSize = _maxCameraSize;
         }
-
         allCities = GameObject.FindGameObjectsWithTag("City");
 
-        //string allnames = "";
-        //foreach (GameObject city in allCities)
-        //{ 
-        //    allnames += city.name.ToString() + " ";
-        //}
+        //fow is 5 times bigger than player action range
+        _playerFOWRadius = _playerActionRange * 5;
 
-        //Debug.Log(allnames);
+        //Do we have fog of war?
+        Camera.main.GetComponent<FogOfWar>().enabled = (_fogOfWar) ? true : false;
+    }
+
+    void Update()
+    {
+        //not using GPS means we can move the avatars with mouse / touch
+        if (!_usingGPS)
+            _canPlayerInteract = (GUIManager.Instance.IsAnyPanelOpen()) ? false : true;
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
-    { 
+    {
         switch (status)
         {
             case GameData.GameStatus.UsingGPS:
@@ -141,15 +144,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    
-    public GameObject[] GetAllPlayers() 
+
+    public GameObject[] GetAllPlayers()
     {
         GetComponent<PhotonView>().RPC("FindAllPlayers", PhotonTargets.All);
         return allPlayers;
     }
 
     [PunRPC]
-    public void FindAllPlayers() 
+    public void FindAllPlayers()
     {
         allPlayers = GameObject.FindGameObjectsWithTag("Player");
     }
@@ -159,7 +162,7 @@ public class GameManager : MonoBehaviour
         return _pinCode.ToString();
     }
 
-    public byte GetMaximumTeams() 
+    public byte GetMaximumTeams()
     {
         return _maxTeams;
     }
@@ -169,39 +172,26 @@ public class GameManager : MonoBehaviour
         return _minTeams;
     }
 
-    public float GetCurrentCameraSize() 
+    public float GetCurrentCameraSize()
     {
         return _currentCameraSize;
     }
 
-    public float GetPlayerSpeed ()
+    public float GetPlayerSpeed()
     {
         return _playerSpeed;
     }
 
-    public bool CanPlayerInteract() 
+    public bool CanPlayerInteract()
     {
         return _canPlayerInteract;
     }
 
     public void SetPlayerInteract(bool value)
     {
-    //    if (value)
-    //    {
-    //        _canPlayerInteract = false;
-    //        StartCoroutine(WaitForInteraction());
-            _canPlayerInteract = value;
-    //    }
+        _canPlayerInteract = value;
     }
-    //IEnumerator WaitForInteraction()
-    //{
-    //    Debug.Log("waiting");
-    //    yield return new WaitForSeconds(2);
-    //    Debug.Log("waited 2 secs");
-        
-    //}
-
-    public GameData.TeamCountry GetMyPlayerTeam() 
+    public GameData.TeamCountry GetMyPlayerTeam()
     {
         return _myPlayer;
     }
@@ -222,40 +212,25 @@ public class GameManager : MonoBehaviour
     }
 
     public float GetPlayerActionRange()
-    { 
+    {
         //TODO:
         //this action range must be based on calculation of physical world then convert to 
         //player's sphiere collider radius
-
         return _playerActionRange;
     }
 
+    public float GetPlayerFOWRadius()
+    {
+        return _playerFOWRadius;
+    }
+
     public float GetCityActionRange()
-    { 
+    {
         //TODO: 
         //this action range can be based on area or based on screen size (cities need to be interactive and touchable)
-
         return _cityActionRange;
-    }                                    
-
-
-    void Update()
-    {
-        if (!_usingGPS ) 
-        {
-            if (GUIManager.Instance.IsAnyPanelOpen())
-            {
-                _canPlayerInteract = false;
-            }
-            else
-            {
-                _canPlayerInteract = true;
-            }
-        }
-
-        //TODO
-        //if we are in "ready to play" state we should get the gameplay status from JSON and set here
-        //gameplayDurationSeconds = gameplayDuration * 60;
-        //eventPeriod = eventPeriodSeconds * 60;
     }
+
+
+
 }

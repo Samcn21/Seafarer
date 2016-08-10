@@ -55,5 +55,21 @@ public class PanelConnectionStatus : PanelParent
 
         //GUIManager.Instance.PanelConnectionStatus.testText.text = GameManager.Instance.QuestionBank.GetRandomQuestionNumber().ToString();
         GUIManager.Instance.PanelConnectionStatus.testText.text = GameManager.Instance.TimeController.GetGamePlayDuration().ToString();
+        RestartTheGame();
     }
+
+    [PunRPC]
+    public void RestartTheGame() 
+    {
+        StartCoroutine(Waiting(2));
+    }
+
+    IEnumerator Waiting(float wSec)
+    {
+        yield return new WaitForSeconds(wSec);
+        PhotonNetwork.Disconnect();
+        GameObject.Destroy(GameObject.FindGameObjectWithTag("GameController"));
+        Application.LoadLevel(1);
+    }
+
 }
