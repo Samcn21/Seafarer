@@ -130,7 +130,156 @@ public class QuestionBank : MonoBehaviour
            "Guld, sølv og krydderier som peber, ingefær, kanel , nellike m.m.",
            "C"
        });
-       
+
+       questionBank.Add(new List<string> 
+       {
+           "11",
+           "Opdagelsesrejsende ville finde søvejen til bl.a. hvilket land? ",
+           "USA ",
+           "Indien",
+           "Tyrkiet",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "12",
+           "Hvorfor ville man finde søvejen til Indien?  ",
+           " For at hente krydderier  ",
+           " For at hente slaver ",
+           " For at lære at indernes kultur at kende. ",
+           "A"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "13",
+           "    Hvilke produkter var især eftertragtede fra Indien? ",
+           " Silke",
+           " Indiske kvinders sari-dragt  ",
+           " Peber, ingefær, kanel, nellike mm",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "14",
+           "Hvilke to lande ledte den europæiske ekspansion in 1400-1600 tallet? ",
+           "Frankrig og England",
+           "Holland og Spanien ",
+           "Spanien og Portugal ",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "15",
+           "Hvad karakteriserede den portugisiske ekspansion? ",
+           "Portugeserne var primært drevet af jagten på guld",
+           "Portugeserne var primært drevet af jagten på krydderi  ",
+           "Portugeserne var primært drevet af jagten på olie",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "16",
+           "Hvad karakteriserede den spanske ekspansion? ",
+           "Spanierne var primært drevet af jagten på olie",
+           "Spanierne var primært drevet af jagten på krydderi",
+           "Spanierne var primært drevet af jagten på guld ",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "17",
+           "Hvad karakteriserede den spanske ekspansion? ",
+           "Spanierne plyndrede de kyster de besøgte og tog hurtigt af sted igen med erobrede slaver",
+           "Spanierne kom til lande med en relativ tynd befolkning, som de ikke blot erobrede men også befolkede med udvandrere og negerslaver",
+           "Spanierne etablerede kolonier langs kysten, der tjente som handelsstationer og militære støttepunkter for deres herredømme over de indfødte",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "18",
+           "Den europæiske ekspansion i 1400-1600-tallet faldt sammen med renæssancen - det store åndelige og materielle opsving i Europa. Men hvad var den ydre anledning til ekspansionen? ",
+           "Udviklingen af skibstyper som kunne transportere tilstrækkelig med mennesker og proviant over lange afstande",
+           "Amerikas opdagelse 1492 og opdagelsen af søvejen til Indien 1498",
+           "Amerikas opdagelse i 1492 og opdagelsen af kompasset som tillod præcis navigation over lange afstande",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "19",
+           "Hvad har opdagelsen af Sydamerika betydet for det danske køkken idag?  ",
+           "Fra Sydamerika har vi fået citroner og tomater  ",
+           "Fra Sydamerika har vi fået kartofler og tomater",
+           "Fra Sydamerika har vi fået kartofler og citroner",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "20",
+           "Hvornår beherskede Aztekerne Mexico ",
+           "1400-1500",
+           "1500-1600",
+           "1600-1700",
+           "A"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "21",
+           "Hvad var Aztekerrigets nationalret?",
+           "Tacos",
+           "Tortillas",
+           "Risotto",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "22",
+           "Hvilke byer består Tripelalliancen af?",
+           " Texcoco, Tenochtitlan og Mexico ",
+           "Texcoco, Frederikssund og Pangpanga",
+           "Texcoco, Tenochtitlan og Tlacopan",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "23",
+           "Hvad er Aztekerne mest berømt for? ",
+           "Deres musik.",
+           "Deres menneskeofringer",
+           "deres mad. ",
+           "B"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "24",
+           "Hvad er aztekernes vigtigste fødevarer? ",
+           "Æble, gulerødder og jordbær ",
+           "Citroner, ærter og majs",
+           "Majs, bønner og squash ",
+           "C"
+       });
+
+       questionBank.Add(new List<string> 
+       {
+           "25",
+           "Hvor kommer aztekerner fra ifølge legenderne?",
+           "Texas ",
+           "Aztlán ",
+           "England",
+           "B"
+       });
 
 
         //finds the number of questions in the question bank

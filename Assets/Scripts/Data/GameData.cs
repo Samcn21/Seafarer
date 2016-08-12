@@ -59,21 +59,40 @@ public class GameData
 
     public enum City
     {
+        Agra,
         Amsterdam,
+        Ayutthaya,
+        Beijing,
         Berlin,
         Cario,
         Copenhagen,
+        Constantinople,
+        Cordoba,
+        Edo,
         Esfahan,
         Fes,
-        Istanbul,
+        Great_Zimbabwe,
+        Hampton,
+        Lima,
         Lisbon,
         London,
         Madrid,
-        MexicoCity,
+        Mexico_City,
+        M_banza_Kongo,
+        Mombasa,
+        Moscow,
+        Nanjing,
         Paris,
+        Potosi,
+        Salvador_da_Bahia,
+        Santa_Fe,
         Seville,
-        Tokyo,
-        Venice
+        St_Augustine,
+        St_John,
+        Tenochtitlan,
+        Timbuktu,
+        Venice,
+        Vijayanagar
     }
 
     public enum CityStatus
@@ -103,6 +122,7 @@ public class GameData
     public enum CitySet
     { 
         World25,
+        World32,
         World40,
         Europe25,
         Europe32,

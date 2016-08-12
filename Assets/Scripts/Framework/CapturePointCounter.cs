@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class CapturePointCounter : MonoBehaviour 
+public class CapturePointCounter : MonoBehaviour
 {
-    public bool Reset 
+    public bool Reset
     {
         get { return _reset; }
         set
@@ -56,18 +56,24 @@ public class CapturePointCounter : MonoBehaviour
     [SerializeField]
     private List<GameData.TeamCountry> _owners;
 
+    [SerializeField]
+    private int _countOfRun = 0;
+
     void Start()
     {
         _pointCalculationTimer = GameManager.Instance.TimeController.PointCalculationTimer;
     }
 
-    void Update() 
+    void Update()
     {
         if (_canCount)
             Timer += Time.deltaTime;
+
+        if (Input.GetMouseButtonUp(0))
+            SendThePoints(1, GameManager.Instance.GetMyPlayerTeam());
     }
 
-    public void StartCounting(List<GameData.TeamCountry> owners, float pointsPerMinute) 
+    public void StartCounting(List<GameData.TeamCountry> owners, float pointsPerMinute)
     {
         _owners = owners;
         Reset = true;
@@ -80,7 +86,19 @@ public class CapturePointCounter : MonoBehaviour
     {
         foreach (GameObject player in GameManager.Instance.GetAllPlayers())
         {
-            player.GetComponent<PhotonView>().RPC("SetMyTotalPoints", PhotonTargets.All, points, country);
+            Debug.Log(GameManager.Instance.GetTeamID(country));
+        //_countOfRun++;
+        player.GetComponent<PhotonView>().RPC("SetMyTotalPoints", PhotonPlayer.Find(2), points);
+        }
+    }
+
+    [PunRPC]
+    public void Tester(float points)
+    {
+        if (PhotonNetwork.player.ID == 2)
+        { 
+            Debug.Log("Yes " + points);
+            //_countOfRun++;
         }
     }
 }

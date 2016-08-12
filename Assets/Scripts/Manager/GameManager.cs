@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     private float _playerFOWRadius;
     private bool _canPlayerInteract = true;
     public GameObject[] allPlayers;
-
+    public Dictionary<GameData.TeamCountry, int> TeamsIdNames = new Dictionary<GameData.TeamCountry, int>();
 
     [SerializeField]
     private float _cityActionRange;
@@ -121,6 +121,19 @@ public class GameManager : MonoBehaviour
         //not using GPS means we can move the avatars with mouse / touch
         if (!_usingGPS)
             _canPlayerInteract = (GUIManager.Instance.IsAnyPanelOpen()) ? false : true;
+
+
+        if (Input.anyKeyDown)
+        {
+
+            foreach (KeyValuePair<GameData.TeamCountry, int> pair in TeamsIdNames)
+            {
+                Debug.Log(pair.Key + " - " + pair.Value);
+            }
+
+
+        }
+
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
@@ -144,6 +157,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void SetTeamsIdName(GameData.TeamCountry countryValue, int IdKey)
+    {
+        //if the country is already joined 
+        if (TeamsIdNames.ContainsKey(countryValue))
+        {
+            //the player joined the map and disconnected but came back again so we remove their pre-id and add a new one
+            TeamsIdNames.Remove(countryValue);
+            TeamsIdNames.Add(countryValue, IdKey);
+        }
+        //it's the first time the team joining the game
+        else
+        {
+            TeamsIdNames.Add(countryValue, IdKey);
+        }
+    }
+
+    public int GetTeamID( GameData.TeamCountry country) 
+    {
+        foreach (KeyValuePair<GameData.TeamCountry, int> pair in TeamsIdNames)
+        {
+            if (pair.Key == country)
+                return pair.Value;
+        }
+        return 0;
+    }
 
     public GameObject[] GetAllPlayers()
     {

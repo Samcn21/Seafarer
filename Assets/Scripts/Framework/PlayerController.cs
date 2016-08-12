@@ -7,6 +7,9 @@ using TouchScript;
 public class PlayerController : Photon.MonoBehaviour
 {
     [SerializeField]
+    private int _myTeamID;
+
+    [SerializeField]
     private GameData.TeamCountry _myTeam;
 
     [SerializeField]
@@ -51,8 +54,11 @@ public class PlayerController : Photon.MonoBehaviour
     [SerializeField]
     private float _speed = 100;
 
+    int run = 0;
     void Start()
     {
+        run = 0;
+
         if (GameManager.Instance.GetGameStatus(GameData.GameStatus.UsingGPS))
         {
             //TODO a class for GPS calculation
@@ -70,23 +76,14 @@ public class PlayerController : Photon.MonoBehaviour
         //in the beginning the country is alone:
         _isAlone = true;
 
+        //GetComponent<PhotonView>().RPC("SetMyTeamID", PhotonTargets.All, PhotonNetwork.player.ID);
+        //SetMyTeamID(PhotonNetwork.player.ID);
+
         //Debug.Log(FindCurrentAlly());
     }
 
     void Update()
     {
-        Debug.Log(PhotonNetwork.playerName + " : " + PhotonNetwork.player.name + " : " + PhotonNetwork.player.ID + " : " + PhotonNetwork.player.isLocal);
-
-        //PhotonNetwork.playerName will return the name of the local player.
-
-        //PhotonPlayer.name will also return the name of the local player.
-
-        //PhotonNetwork.player.name will also return the name of the local player.
-
-        //PhotonNetwork.player.ID will return the ID of the local player.
-
-        //PhotonNetwork.player.isLocal will return if the player is the local player.
-
         if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
         {
             if (GameManager.Instance.CanPlayerInteract())
@@ -99,6 +96,12 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void SetMyTeamID(int value)
+    {
+        _myTeamID = value;
+    }
+
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
         _myTeam = team;
@@ -108,8 +111,6 @@ public class PlayerController : Photon.MonoBehaviour
     {
         return _myTeam;
     }
-
-
 
     public GameData.TeamCountry FindCurrentAlly()
     {
@@ -289,6 +290,7 @@ public class PlayerController : Photon.MonoBehaviour
             {
                 _myPlayMode = GameData.TeamPlayMode.Exploring;
                 _isAlone = true;
+                _allies.Clear();
             }
         }
     }
@@ -338,13 +340,21 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
+    //TODO:
+    //photon networking event manager:
+    //https://doc.photonengine.com/en/pun/current/tutorials/rpcsandraiseevent
+
     [PunRPC]
-    public void SetMyTotalPoints(float points, GameData.TeamCountry country) 
+    public void SetMyTotalPoints(float points) 
     {
-        if (photonView.isMine && _myTeam == country)
+
+        if (PhotonNetwork.player.ID == 2)
         {
-            _myTotalPoints += points;
+            Debug.Log("Gotta!");
+            
         }
+
+      //  _myTotalPoints += points;
     }
 
     public int GetMyTotalPoints()
