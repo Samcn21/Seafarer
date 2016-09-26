@@ -78,7 +78,7 @@ public class TimeController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void SetTimes(float gameplayDuration)
     {
         GameplayDurationSec = gameplayDuration;

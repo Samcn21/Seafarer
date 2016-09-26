@@ -191,7 +191,7 @@ public class PanelQuestion : PanelParent
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void InviterInvitedAnswer(string answer, GameData.TeamCountry country)
     {
         if (country == _inviter)

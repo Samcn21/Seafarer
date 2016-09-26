@@ -96,7 +96,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //calss: Instantiate
     public void SetMyTeamID(int value)
     {
         _myTeamID = value;
@@ -135,7 +135,7 @@ public class PlayerController : Photon.MonoBehaviour
         return _questionsTotal;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void AddToTotalQuestions(int questionNumber, GameData.TeamCountry askerCountry)
     {
         if (_myTeam == askerCountry)
@@ -216,14 +216,14 @@ public class PlayerController : Photon.MonoBehaviour
         _isAlone = value;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion, PanelCity
     public void ChangePlayMode(GameData.TeamPlayMode mode)
     {
         _myPlayMode = mode;
     }
 
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangePlayerStatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer)
     {
         if (isCorrectAnswer)
@@ -252,7 +252,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangePlayerStatusAllies(GameData.City capturedCity, int questionTrue)
     {
         //add the city to captured with allies
@@ -265,7 +265,7 @@ public class PlayerController : Photon.MonoBehaviour
         _questionsTrue.Add(questionTrue);
     }
 
-    [PunRPC]
+    [PunRPC] //Class: PanelQuestion, PanelAllinaceInvitation, PanelSiege
     public void ChangePlayerStatusInvited(GameData.TeamCountry invited, GameData.TeamCountry inviter, bool isSeigeBroken)
     {
         if (!isSeigeBroken)
@@ -296,7 +296,7 @@ public class PlayerController : Photon.MonoBehaviour
     }
 
     //send invitation to possible alliance
-    [PunRPC]
+    [PunRPC] //class: PanelCity
     public void InviteAlliance(GameData.TeamCountry receiver, GameData.TeamCountry sender, GameData.City city)
     {
         string msg = sender.ToString() + " wants to ally with you to attack " + city.ToString() + " Would you like to join them? ";
@@ -307,7 +307,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelAllianceInvitation
     public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city)
     {
         //if this is my player and I was the country who sent the invitation for alliance
@@ -330,7 +330,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: this, QuestionBank
     public void SetRandomQuestionNumber(int randomNumber, GameData.TeamCountry invited)
     {
         Debug.Log("SetRandomQuestionNumber " + GameManager.Instance.GetMyPlayerTeam());
@@ -344,7 +344,7 @@ public class PlayerController : Photon.MonoBehaviour
     //photon networking event manager:
     //https://doc.photonengine.com/en/pun/current/tutorials/rpcsandraiseevent
 
-    [PunRPC]
+    [PunRPC] //class: CapturePointCounter
     public void SetMyTotalPoints(float points) 
     {
 

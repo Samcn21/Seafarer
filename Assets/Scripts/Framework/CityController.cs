@@ -150,7 +150,7 @@ public class CityController : MonoBehaviour
     }
 
     //set action range in the network
-    [PunRPC]
+    [PunRPC] //class: CityController
     public void SetPlayersInActionRange(GameData.TeamCountry value, bool isAdding)
     {
         if (isAdding)
@@ -165,13 +165,13 @@ public class CityController : MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelSiege, PanelCity, PanelAllianceInvitation
     public void SetCityStatus(GameData.DefenceStatus value)
     {
         _defenceStatus = value;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelSiege, PanelAllianceInvitation
     public void SetCityDiceNumber(int cityDiceNumber) 
     {
         _cityDiceNumber = cityDiceNumber;
@@ -182,7 +182,7 @@ public class CityController : MonoBehaviour
         return _cityDiceNumber;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangeCityStatusAllies(GameData.TeamCountry cityOwnerInviter, GameData.TeamCountry cityOwnerInvited, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus)
     {
         //remove previous owner
@@ -206,7 +206,7 @@ public class CityController : MonoBehaviour
     }
     
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangeCityStatus(GameData.TeamCountry cityOwner, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus, bool isCorrectAnswer)
     {
         //if player answered to a question correctly

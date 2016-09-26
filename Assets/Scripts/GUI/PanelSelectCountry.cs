@@ -102,7 +102,7 @@ public class PanelSelectCountry : PanelParent
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelSelectCountry
     public void AddAlreadyTaken(GameData.TeamCountry team)
     {
         _alreadyTakenCountry.Add(team);

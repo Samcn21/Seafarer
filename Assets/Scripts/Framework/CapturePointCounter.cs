@@ -86,13 +86,13 @@ public class CapturePointCounter : MonoBehaviour
     {
         foreach (GameObject player in GameManager.Instance.GetAllPlayers())
         {
-            Debug.Log(GameManager.Instance.GetTeamID(country));
+            //Debug.Log(GameManager.Instance.GetTeamID(country));
         //_countOfRun++;
         player.GetComponent<PhotonView>().RPC("SetMyTotalPoints", PhotonPlayer.Find(2), points);
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void Tester(float points)
     {
         if (PhotonNetwork.player.ID == 2)

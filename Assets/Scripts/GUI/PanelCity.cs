@@ -199,7 +199,7 @@ public class PanelCity : PanelParent
     }
 
     //find all players that have this city in their action range except me
-    [PunRPC]
+    [PunRPC] //class: PenelCity
     private void FindInActionRangePlayers(GameObject city)
     {
         //search for all players in city's action range

@@ -430,7 +430,7 @@ public class QuestionBank : MonoBehaviour
     }
 
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void ClearLists(GameData.TeamCountry inviter, GameData.TeamCountry invited)
     {
         if (GameManager.Instance.GetMyPlayerTeam() == inviter | GameManager.Instance.GetMyPlayerTeam() == invited)

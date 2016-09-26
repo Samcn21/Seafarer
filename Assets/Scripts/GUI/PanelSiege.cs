@@ -55,7 +55,7 @@ public class PanelSiege : PanelParent
         //_canInvitedSeeMsg = false;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelAllianeInvitation, PlayerController
     public void SetPanelInfo(GameData.City cityName, GameData.TeamCountry inviter, GameData.TeamCountry invited)
     {
 
@@ -77,7 +77,7 @@ public class PanelSiege : PanelParent
         return _myDiceNumber;
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void SetDiceNumber(int diceNumber, GameData.TeamCountry country)
     {
         if (_invited == country)

@@ -58,7 +58,7 @@ public class PanelConnectionStatus : PanelParent
         RestartTheGame();
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void RestartTheGame() 
     {
         StartCoroutine(Waiting(2));

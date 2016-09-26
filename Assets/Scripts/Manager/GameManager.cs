@@ -130,10 +130,7 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log(pair.Key + " - " + pair.Value);
             }
-
-
         }
-
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
@@ -157,7 +154,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: instantiate
     public void SetTeamsIdName(GameData.TeamCountry countryValue, int IdKey)
     {
         //if the country is already joined 
@@ -190,7 +187,7 @@ public class GameManager : MonoBehaviour
         return allPlayers;
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void FindAllPlayers()
     {
         allPlayers = GameObject.FindGameObjectsWithTag("Player");
