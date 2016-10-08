@@ -59,7 +59,7 @@ public class PanelCity : PanelParent
     public void OpenPanel(GameData.City cityName, GameData.TeamCountry askerCountry)
     {
         ShowPanel();
-        string cityNameStatus = cityName.ToString();
+        string cityNameStatus = (cityName.ToString().Contains("St_")) ? cityName.ToString().Replace("_", ". ") : cityName.ToString().Replace("_", " ");
         _city = cityName;
         _askerCountry = askerCountry;
 
@@ -199,7 +199,7 @@ public class PanelCity : PanelParent
     }
 
     //find all players that have this city in their action range except me
-    [PunRPC]
+    [PunRPC] //class: PenelCity
     private void FindInActionRangePlayers(GameObject city)
     {
         //search for all players in city's action range

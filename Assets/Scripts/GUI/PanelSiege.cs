@@ -35,8 +35,10 @@ public class PanelSiege : PanelParent
     [SerializeField]
     private int _myDiceNumber = 0;
 
+    [SerializeField]
     private bool _canRollDice;
 
+    [SerializeField]
     private bool _canInvitedSeeMsg;
 
     void Awake()
@@ -50,11 +52,10 @@ public class PanelSiege : PanelParent
     {
         base.ShowPanel();
         _canRollDice = true;
-
-
+        //_canInvitedSeeMsg = false;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelAllianeInvitation, PlayerController
     public void SetPanelInfo(GameData.City cityName, GameData.TeamCountry inviter, GameData.TeamCountry invited)
     {
 
@@ -72,11 +73,11 @@ public class PanelSiege : PanelParent
 
     private int GetMyDiceNumber()
     {
-        _myDiceNumber = Random.Range(1, 11);
+        _myDiceNumber = GameManager.Instance.DiceController.GetPlayerDiceNumber();
         return _myDiceNumber;
     }
 
-    [PunRPC]
+    [PunRPC] //class: this
     public void SetDiceNumber(int diceNumber, GameData.TeamCountry country)
     {
         if (_invited == country)

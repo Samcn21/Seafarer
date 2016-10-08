@@ -26,7 +26,7 @@ public class StateManager : MonoBehaviour
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject.transform.parent);
+        //DontDestroyOnLoad(gameObject.transform.parent);
     }
     void Start()
     {

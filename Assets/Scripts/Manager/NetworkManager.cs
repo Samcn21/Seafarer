@@ -49,7 +49,7 @@ public class NetworkManager : Photon.MonoBehaviour
             PhotonNetwork.ConnectUsingSettings(_buildVersion);
         }
 
-        //TODO: must check once a while
+        //TODO: must check once a while //Also can check with android plugin
         /*
         if (InternetConnection.IsInternetConnected())
         {

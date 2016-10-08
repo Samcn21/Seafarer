@@ -7,15 +7,16 @@ using TouchScript;
 public class PlayerController : Photon.MonoBehaviour
 {
     [SerializeField]
+    private int _myTeamID;
+
+    [SerializeField]
     private GameData.TeamCountry _myTeam;
-
-
 
     [SerializeField]
     private GameData.TeamPlayMode _myPlayMode = GameData.TeamPlayMode.Exploring;
 
     [SerializeField]
-    private int _myTotalPoints = 0;
+    private float _myTotalPoints = 0;
 
     [SerializeField]
     private bool _isAlone;
@@ -53,8 +54,11 @@ public class PlayerController : Photon.MonoBehaviour
     [SerializeField]
     private float _speed = 100;
 
+    int run = 0;
     void Start()
     {
+        run = 0;
+
         if (GameManager.Instance.GetGameStatus(GameData.GameStatus.UsingGPS))
         {
             //TODO a class for GPS calculation
@@ -66,13 +70,38 @@ public class PlayerController : Photon.MonoBehaviour
         }
 
         //get the radius from game manager based on map size
-        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetCityActionRange();
+        this.GetComponent<SphereCollider>().radius = GameManager.Instance.GetPlayerActionRange();
+        this.GetComponent<FogOfWarUnit>().radius = GameManager.Instance.GetPlayerFOWRadius();
 
         //in the beginning the country is alone:
         _isAlone = true;
 
+        //GetComponent<PhotonView>().RPC("SetMyTeamID", PhotonTargets.All, PhotonNetwork.player.ID);
+        //SetMyTeamID(PhotonNetwork.player.ID);
+
         //Debug.Log(FindCurrentAlly());
     }
+
+    void Update()
+    {
+        if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
+        {
+            if (GameManager.Instance.CanPlayerInteract())
+            {
+                //Debug.Log( GameManager.Instance.CanPlayerInteract());
+                this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
+                this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
+            }
+
+        }
+    }
+
+    [PunRPC] //calss: Instantiate
+    public void SetMyTeamID(int value)
+    {
+        _myTeamID = value;
+    }
+
     public void ChooseMyTeam(GameData.TeamCountry team)
     {
         _myTeam = team;
@@ -82,8 +111,6 @@ public class PlayerController : Photon.MonoBehaviour
     {
         return _myTeam;
     }
-
-
 
     public GameData.TeamCountry FindCurrentAlly()
     {
@@ -108,7 +135,7 @@ public class PlayerController : Photon.MonoBehaviour
         return _questionsTotal;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void AddToTotalQuestions(int questionNumber, GameData.TeamCountry askerCountry)
     {
         if (_myTeam == askerCountry)
@@ -143,19 +170,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (_isTouchMovement & StateManager.Instance.CurrentActiveState == GameData.GameStates.Play)
-        {
-            if (GameManager.Instance.CanPlayerInteract())
-            {
-                //Debug.Log( GameManager.Instance.CanPlayerInteract());
-                this.transform.position = Vector3.Lerp(this.transform.position, _nextPosition, _speed * Time.deltaTime);
-                this.transform.position = new Vector3(this.transform.position.x, 1, this.transform.position.z);
-            }
 
-        }
-    }
 
 
 
@@ -201,14 +216,14 @@ public class PlayerController : Photon.MonoBehaviour
         _isAlone = value;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion, PanelCity
     public void ChangePlayMode(GameData.TeamPlayMode mode)
     {
         _myPlayMode = mode;
     }
 
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangePlayerStatus(GameData.City capturedCity, int questionTrue, bool isCorrectAnswer)
     {
         if (isCorrectAnswer)
@@ -237,7 +252,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangePlayerStatusAllies(GameData.City capturedCity, int questionTrue)
     {
         //add the city to captured with allies
@@ -250,7 +265,7 @@ public class PlayerController : Photon.MonoBehaviour
         _questionsTrue.Add(questionTrue);
     }
 
-    [PunRPC]
+    [PunRPC] //Class: PanelQuestion, PanelAllinaceInvitation, PanelSiege
     public void ChangePlayerStatusInvited(GameData.TeamCountry invited, GameData.TeamCountry inviter, bool isSeigeBroken)
     {
         if (!isSeigeBroken)
@@ -275,12 +290,13 @@ public class PlayerController : Photon.MonoBehaviour
             {
                 _myPlayMode = GameData.TeamPlayMode.Exploring;
                 _isAlone = true;
+                _allies.Clear();
             }
         }
     }
 
     //send invitation to possible alliance
-    [PunRPC]
+    [PunRPC] //class: PanelCity
     public void InviteAlliance(GameData.TeamCountry receiver, GameData.TeamCountry sender, GameData.City city)
     {
         string msg = sender.ToString() + " wants to ally with you to attack " + city.ToString() + " Would you like to join them? ";
@@ -291,7 +307,7 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelAllianceInvitation
     public void Receiver(bool answer, GameData.TeamCountry invited, GameData.TeamCountry inviter, GameData.City city)
     {
         //if this is my player and I was the country who sent the invitation for alliance
@@ -314,4 +330,35 @@ public class PlayerController : Photon.MonoBehaviour
         }
     }
 
+    [PunRPC] //class: this, QuestionBank
+    public void SetRandomQuestionNumber(int randomNumber, GameData.TeamCountry invited)
+    {
+        Debug.Log("SetRandomQuestionNumber " + GameManager.Instance.GetMyPlayerTeam());
+        if (photonView.isMine && _myTeam == invited)
+        {
+            GameManager.Instance.QuestionBank.SetRandomQuestionNumber(randomNumber);
+        }
+    }
+
+    //TODO:
+    //photon networking event manager:
+    //https://doc.photonengine.com/en/pun/current/tutorials/rpcsandraiseevent
+
+    [PunRPC] //class: CapturePointCounter
+    public void SetMyTotalPoints(float points) 
+    {
+
+        if (PhotonNetwork.player.ID == 2)
+        {
+            Debug.Log("Gotta!");
+            
+        }
+
+      //  _myTotalPoints += points;
+    }
+
+    public int GetMyTotalPoints()
+    {
+        return (int)_myTotalPoints;
+    }
 }

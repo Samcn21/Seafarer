@@ -23,6 +23,7 @@ public class GUIManager : MonoBehaviour
     public PanelAllianceInvitation PanelAllianceInvitation;
     public PanelInfo PanelInfo;
     public PanelSiege PanelSiege;
+    public PanelHUD PanelHUD;
 
 
     //Controller variables
@@ -43,7 +44,7 @@ public class GUIManager : MonoBehaviour
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject.transform.parent);
+        //DontDestroyOnLoad(gameObject.transform.parent);
 
         if (!PanelPinCode)
             Debug.LogError("PanelPinCode not found");
@@ -75,7 +76,7 @@ public class GUIManager : MonoBehaviour
     {
         foreach (GameObject panel in _allPanels)
         {
-            if (panel.GetComponent<CanvasGroup>().alpha == 1 && panel.name != "PanelConnectionStatus")
+            if (panel.GetComponent<CanvasGroup>().alpha == 1 && panel.name != "PanelConnectionStatus" && panel.name != "PanelHUD")
             {
                 StartCoroutine(WaitForInteraction(_waitForSeconds));
                 return true;

@@ -5,6 +5,23 @@ using System.Collections.Generic;
 [System.Serializable]
 public class CityController : MonoBehaviour
 {
+    public int OwnerCounter
+    {
+        get { return _ownerCounter;}
+        set 
+        {
+            _ownerCounter = value;
+
+            if (_ownerCounter > 0)
+            {
+                GetComponent<CapturePointCounter>().StartCounting(_cityOwners, _pointsPerMinute);
+                return;
+            }
+        }
+    }
+
+    private int _ownerCounter = 0;
+
     [SerializeField]
     private GameData.City _cityName;
 
@@ -58,6 +75,16 @@ public class CityController : MonoBehaviour
         }
 
     }
+
+    //void Update() 
+    //{
+
+    //    if (Input.GetKeyDown(KeyCode.A))
+    //    {
+    //        _cityOwners.Add(GameData.TeamCountry.Portugal);
+    //        OwnerCounter = _cityOwners.Count;
+    //    }
+    //}
 
     public GameData.City GetCityName()
     {
@@ -123,7 +150,7 @@ public class CityController : MonoBehaviour
     }
 
     //set action range in the network
-    [PunRPC]
+    [PunRPC] //class: CityController
     public void SetPlayersInActionRange(GameData.TeamCountry value, bool isAdding)
     {
         if (isAdding)
@@ -138,13 +165,13 @@ public class CityController : MonoBehaviour
         }
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelSiege, PanelCity, PanelAllianceInvitation
     public void SetCityStatus(GameData.DefenceStatus value)
     {
         _defenceStatus = value;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelSiege, PanelAllianceInvitation
     public void SetCityDiceNumber(int cityDiceNumber) 
     {
         _cityDiceNumber = cityDiceNumber;
@@ -155,7 +182,7 @@ public class CityController : MonoBehaviour
         return _cityDiceNumber;
     }
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangeCityStatusAllies(GameData.TeamCountry cityOwnerInviter, GameData.TeamCountry cityOwnerInvited, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus)
     {
         //remove previous owner
@@ -164,6 +191,7 @@ public class CityController : MonoBehaviour
         //add invited and inviter!
         _cityOwners.Add(cityOwnerInviter);
         _cityOwners.Add(cityOwnerInvited);
+        OwnerCounter = _cityOwners.Count;
 
         //occupied by two country makes the defence 3 //more info --> Game Designer
         _defence = 3;
@@ -178,7 +206,7 @@ public class CityController : MonoBehaviour
     }
     
 
-    [PunRPC]
+    [PunRPC] //class: PanelQuestion
     public void ChangeCityStatus(GameData.TeamCountry cityOwner, GameData.CityStatus cityStatus, GameData.DefenceStatus defenceStatus, bool isCorrectAnswer)
     {
         //if player answered to a question correctly
@@ -186,6 +214,7 @@ public class CityController : MonoBehaviour
         {
             //add the owners
             _cityOwners.Add(cityOwner);
+            OwnerCounter = _cityOwners.Count;
 
             //TODO: Icannot send List<CityOwners> through PunRPC in question panel so I need to check players allies here then add the alies here
 

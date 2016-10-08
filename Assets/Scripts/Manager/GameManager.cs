@@ -7,16 +7,11 @@ public class GameManager : MonoBehaviour
 {
     //References
     public QuestionBank QuestionBank;
-    public RollDice RollDice;
+    public TimeController TimeController;
+    public DiceController DiceController;
 
     private static GameManager _instance = null;
-    public static GameManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
+    public static GameManager Instance { get { return _instance; } }
 
     //Technical options
     [SerializeField]
@@ -27,6 +22,7 @@ public class GameManager : MonoBehaviour
     private bool _onlinePhoton = true;
     [SerializeField]
     private bool _hasPinCodePanel = true;
+
 
 
 
@@ -41,19 +37,12 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private byte _minTeams = 4;
 
-    [Range(1, 60)]
-    [SerializeField]
-    private float _gameplayDuration = 20;
-    private float _gameplayDurationSeconds = 1200;
 
-    [SerializeField]
-    private bool _hasGameEvents = true;
-
-    [SerializeField]
-    private float _gameEventPeriod = 5;
-    private float _gameEventPeriodSeconds = 300;
 
     //Screen Measurements
+    public Camera mainCamera;
+    [SerializeField]
+    private bool _fogOfWar = true;
     [SerializeField]
     private int _screenHight;
     [SerializeField]
@@ -64,38 +53,37 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float _minCameraSize = 45f;
     [SerializeField]
-    private float _maxCameraSize = 45f;
-    public Camera mainCamera;
+    private float _maxCameraSize = 60f;
 
     //Game Objects in the scene
     [SerializeField]
-    private float _playerSpeed;
-
-    [SerializeField]
     private GameData.TeamCountry _myPlayer;
-
     [SerializeField]
-    private bool _canPlayerInteract = true;
-
+    private float _playerSpeed;
     [SerializeField]
     private float _playerActionRange;
+    [SerializeField]
+    private float _playerFOWRadius;
+    private bool _canPlayerInteract = true;
+    public GameObject[] allPlayers;
+    public Dictionary<GameData.TeamCountry, int> TeamsIdNames = new Dictionary<GameData.TeamCountry, int>();
 
     [SerializeField]
     private float _cityActionRange;
-
-    public GameObject[] allPlayers;
     public GameObject[] allCities;
 
+
+    private float timer;
     void Awake()
     {
-        
+
         if (_instance)
         {
             DestroyImmediate(this);
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject.transform.parent);
+        //DontDestroyOnLoad(gameObject.transform.parent);
 
         if (!_onlinePhoton)
         {
@@ -103,7 +91,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start() 
+    void Start()
     {
         _screenHight = Screen.height;
         _screenWidth = Screen.width;
@@ -114,25 +102,39 @@ public class GameManager : MonoBehaviour
             mainCamera.orthographicSize = _minCameraSize;
             _currentCameraSize = _minCameraSize;
         }
-        else 
+        else
         {
             mainCamera.orthographicSize = _maxCameraSize;
             _currentCameraSize = _maxCameraSize;
         }
-
         allCities = GameObject.FindGameObjectsWithTag("City");
 
-        //string allnames = "";
-        //foreach (GameObject city in allCities)
-        //{ 
-        //    allnames += city.name.ToString() + " ";
-        //}
+        //fow is 5 times bigger than player action range
+        _playerFOWRadius = _playerActionRange * 5;
 
-        //Debug.Log(allnames);
+        //Do we have fog of war?
+        Camera.main.GetComponent<FogOfWar>().enabled = (_fogOfWar) ? true : false;
+    }
+
+    void Update()
+    {
+        //not using GPS means we can move the avatars with mouse / touch
+        if (!_usingGPS)
+            _canPlayerInteract = (GUIManager.Instance.IsAnyPanelOpen()) ? false : true;
+
+
+        if (Input.anyKeyDown)
+        {
+
+            foreach (KeyValuePair<GameData.TeamCountry, int> pair in TeamsIdNames)
+            {
+                Debug.Log(pair.Key + " - " + pair.Value);
+            }
+        }
     }
 
     public bool GetGameStatus(GameData.GameStatus status)
-    { 
+    {
         switch (status)
         {
             case GameData.GameStatus.UsingGPS:
@@ -152,15 +154,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    
-    public GameObject[] GetAllPlayers() 
+    [PunRPC] //class: instantiate
+    public void SetTeamsIdName(GameData.TeamCountry countryValue, int IdKey)
+    {
+        //if the country is already joined 
+        if (TeamsIdNames.ContainsKey(countryValue))
+        {
+            //the player joined the map and disconnected but came back again so we remove their pre-id and add a new one
+            TeamsIdNames.Remove(countryValue);
+            TeamsIdNames.Add(countryValue, IdKey);
+        }
+        //it's the first time the team joining the game
+        else
+        {
+            TeamsIdNames.Add(countryValue, IdKey);
+        }
+    }
+
+    public int GetTeamID( GameData.TeamCountry country) 
+    {
+        foreach (KeyValuePair<GameData.TeamCountry, int> pair in TeamsIdNames)
+        {
+            if (pair.Key == country)
+                return pair.Value;
+        }
+        return 0;
+    }
+
+    public GameObject[] GetAllPlayers()
     {
         GetComponent<PhotonView>().RPC("FindAllPlayers", PhotonTargets.All);
         return allPlayers;
     }
 
-    [PunRPC]
-    public void FindAllPlayers() 
+    [PunRPC] //class: this
+    public void FindAllPlayers()
     {
         allPlayers = GameObject.FindGameObjectsWithTag("Player");
     }
@@ -170,7 +198,7 @@ public class GameManager : MonoBehaviour
         return _pinCode.ToString();
     }
 
-    public byte GetMaximumTeams() 
+    public byte GetMaximumTeams()
     {
         return _maxTeams;
     }
@@ -180,39 +208,26 @@ public class GameManager : MonoBehaviour
         return _minTeams;
     }
 
-    public float GetCurrentCameraSize() 
+    public float GetCurrentCameraSize()
     {
         return _currentCameraSize;
     }
 
-    public float GetPlayerSpeed ()
+    public float GetPlayerSpeed()
     {
         return _playerSpeed;
     }
 
-    public bool CanPlayerInteract() 
+    public bool CanPlayerInteract()
     {
         return _canPlayerInteract;
     }
 
     public void SetPlayerInteract(bool value)
     {
-    //    if (value)
-    //    {
-    //        _canPlayerInteract = false;
-    //        StartCoroutine(WaitForInteraction());
-            _canPlayerInteract = value;
-    //    }
+        _canPlayerInteract = value;
     }
-    //IEnumerator WaitForInteraction()
-    //{
-    //    Debug.Log("waiting");
-    //    yield return new WaitForSeconds(2);
-    //    Debug.Log("waited 2 secs");
-        
-    //}
-
-    public GameData.TeamCountry GetMyPlayerTeam() 
+    public GameData.TeamCountry GetMyPlayerTeam()
     {
         return _myPlayer;
     }
@@ -233,40 +248,25 @@ public class GameManager : MonoBehaviour
     }
 
     public float GetPlayerActionRange()
-    { 
+    {
         //TODO:
         //this action range must be based on calculation of physical world then convert to 
         //player's sphiere collider radius
-
         return _playerActionRange;
     }
 
+    public float GetPlayerFOWRadius()
+    {
+        return _playerFOWRadius;
+    }
+
     public float GetCityActionRange()
-    { 
+    {
         //TODO: 
         //this action range can be based on area or based on screen size (cities need to be interactive and touchable)
-
         return _cityActionRange;
-    }                                    
-
-
-    void Update()
-    {
-        if (!_usingGPS ) 
-        {
-            if (GUIManager.Instance.IsAnyPanelOpen())
-            {
-                _canPlayerInteract = false;
-            }
-            else
-            {
-                _canPlayerInteract = true;
-            }
-        }
-
-        //TODO
-        //if we are in "ready to play" state we should get the gameplay status from JSON and set here
-        //gameplayDurationSeconds = gameplayDuration * 60;
-        //eventPeriod = eventPeriodSeconds * 60;
     }
+
+
+
 }

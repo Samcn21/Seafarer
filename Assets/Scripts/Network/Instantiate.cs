@@ -18,6 +18,13 @@ public class Instantiate : MonoBehaviour {
         {
             _allRespawnSpots = GameObject.FindGameObjectsWithTag("Respawn");
         }
+
+        //Debug.Log(PhotonNetwork.playerName + " : " + PhotonNetwork.player.name + " : " + PhotonNetwork.player.ID + " : " + PhotonNetwork.player.isLocal);
+        //PhotonNetwork.playerName will return the name of the local player.
+        //PhotonPlayer.name will also return the name of the local player.
+        //PhotonNetwork.player.name will also return the name of the local player.
+        //PhotonNetwork.player.ID will return the ID of the local player.
+        //PhotonNetwork.player.isLocal will return if the player is the local player.
     }
 
     public void InstantiateMe(GameData.TeamCountry chosenCountry)
@@ -26,8 +33,13 @@ public class Instantiate : MonoBehaviour {
         {
             GameObject mySpawnSpot = _allRespawnSpots[Random.Range(0, _allRespawnSpots.Length)];
             GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(chosenCountry.ToString(), mySpawnSpot.gameObject.transform.position, Quaternion.identity, 0);
+            PhotonNetwork.playerName = chosenCountry.ToString();
+            myPlayer.GetComponent<PhotonView>().RPC("SetMyTeamID", PhotonTargets.All, PhotonNetwork.player.ID);
+            GameManager.Instance.GetComponent<PhotonView>().RPC("SetTeamsIdName", PhotonTargets.AllBufferedViaServer, chosenCountry, PhotonNetwork.player.ID);
             ((MonoBehaviour)myPlayer.GetComponent("PlayerController")).enabled = true;
             ((MonoBehaviour)myPlayer.GetComponent("InputController")).enabled = true;
+            ((MonoBehaviour)myPlayer.GetComponent("FogOfWarUnit")).enabled = true;
+
 
             //if we use camera zoom in/out or 3D
             //myPlayer.transform.FindChild("Main Camera").gameObject.SetActive(true);
@@ -44,14 +56,7 @@ public class Instantiate : MonoBehaviour {
 
     public bool HasMyInstance() 
     {
-        if (_isThereInstance)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (_isThereInstance) ? true : false;
     }
 
     public int CountOfInstances() 
