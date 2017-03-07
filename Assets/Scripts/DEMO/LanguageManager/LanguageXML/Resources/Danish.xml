@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Root>
+  <Phrases>
+		<Options>INDSTILLINGER</Options>
+		<Music>MUSIK</Music>
+		<SFX>LYDEFFEKTER</SFX>
+		<Language>SPROG</Language>
+		<Subtitles>UNDERTEKSTER</Subtitles>
+    	<Play>AFSPIL</Play>
+		<Story>HISTORIE</Story>
+		<Credits>Holdet bag</Credits>
+		<Back>Tilbage</Back>
+    	<Selectnl>VÆLG BANE</Selectnl>
+		<LevelEditor>Bane editor</LevelEditor>
+		<StudentShowcase>DENNE SPILPRODUKTION ER EN STUDIEFREMVISNING</StudentShowcase>
+		<BuyQ>VIL DU KØBE HELE OPLEVELSEN FOR FIKTIVE 6.00 KR?</BuyQ>
+		<FullExperience>HELE OPLEVELSEN</FullExperience>
+		<Mission>MISSION FULDFØRT</Mission>
+		<Prisoners>HYBRID-FANGER REDDET</Prisoners>
+		<Level1Completed>DU GENNEMFØRTE BANEN. GODT KLARET!</Level1Completed>
+		<OpenBrowser>ÅBN BROWSER</OpenBrowser>
+		<BrowserText>Denne handling vil åbne i din internet browser (internet forbindelse påkrævet)</BrowserText>
+		<ContinueQuestion>Fortsæt?</ContinueQuestion>
+		<TheEnd>SLUTNINGEN?</TheEnd>
+		<ThankYou>
+			TAK FOR AT DU SPILLEDE UPRISE! \n DU ER NU NÅET TIL SLUTNINGEN AF VORES STUDIEFREMVISNING. \n FLERE BANER KOMMER I FREMTIDEN \n	 \n HILSEN \n	LASER BUDDIES
+		</ThankYou>
+  </Phrases>
+  <LevelNames> 
+		<Level-07>Frem og tilbage</Level-07>
+    	<Level-06>Kraft Tårnet</Level-06>
+  		<Level-05>Indespærret</Level-05>
+		<Level-04>I knibe</Level-04>
+  		<Level-03>Octokai</Level-03>
+		<Level-02>Dobbelt op</Level-02>
+		<Level-01>Klaustrofobia</Level-01>
+		<Level001>Indgang</Level001>
+		<Level002>Genbrug</Level002>
+		<Level003>Lager</Level003>
+		<Level004>Mellem Sikkerhed</Level004>
+		<Level005>Vertigo Tårn</Level005>
+		<Level006>Orange Gange</Level006>
+		<Level007>Høj Sikkerhed</Level007>
+    <Level008>Treenighed</Level008>
+    <Level009>Lukket Ned</Level009>
+	</LevelNames>
+  <Subtitle>
+	  	<Vega>
+	  		<LevelEnter>
+	  			<LevelEnter1>Godt! Der er kun én vej frem...</LevelEnter1>
+	  			<LevelEnter2>Okay, lad os komme videre...</LevelEnter2>
+	  			<LevelEnter3>Okay, jeg er inde...</LevelEnter3>
+	  			<LevelEnter4>Okay, så kører vi...</LevelEnter4>
+	  			<LevelEnter5>Godt, nu skal jeg bare nå til toppen...</LevelEnter5>
+	  		</LevelEnter>
+	  		<FirstLevelEntry>Jeg må op på øverste etage...</FirstLevelEntry>
+	  		<FirstFloorTeleporter>Jeg burde kunne komme igennem de her teleportere...</FirstFloorTeleporter>
+	  		<FirstEnemyMeet>Hvis de her vagter opdager mig så bliver det den korteste redningsmission nogensinde...</FirstEnemyMeet>
+	  		<FirstFFDMeet>Jeg kan ikke hacke kraftfeltet alene...</FirstFFDMeet>
+	  		<FirstFFDMeet2nd>Måske kan jeg finde noget, der kan hacke den her tingest...</FirstFFDMeet2nd>
+	  		<LennonFound>Ah! Den her lille ven kan måske hjælpe med at hacke computerne</LennonFound>
+	  		<FirstPrisonerMeet>Så det er sådan, de holder de andre hybrider fanget...</FirstPrisonerMeet>
+	  		<PrisonerRescue>
+	  			<PrisonerRescue1>Bare rolig, jeg skal nok få dig ud herfra...</PrisonerRescue1>
+	  			<PrisonerRescue2>Det er okay. Jeg skal nok befri dig</PrisonerRescue2>
+	  			<PrisonerRescue3>Jeg skal nok sørge for at få dig ud, min ven!</PrisonerRescue3>
+	  			<PrisonerRescue4>Du er snart fri. Stol på mig!</PrisonerRescue4>
+	  			<PrisonerRescue5>Jeg skal nok befri dig – hold ud...</PrisonerRescue5>
+	  			<PrisonerRescue6>Hjælpen er kommet, ven!</PrisonerRescue6>
+	  		</PrisonerRescue>
+	  		<GlovesPickUp>Sejt! Med denne her kan jeg manipulere etagernes låsemekanismer!</GlovesPickUp>
+	  		<FirstWallTeleporter>
+	  			<FirstWallTeleporter1>Den her dør ’burde’ virke hvis den placeres rigtigt</FirstWallTeleporter1>
+	  			<FirstWallTeleporter2>Denne teleporter kunne tage mig til andre steder, hvis jeg bare vidste hvordan.</FirstWallTeleporter2>
+	  		</FirstWallTeleporter>
+	  		<FirstWireSystemMeet>Der er noget med de her ledninger...</FirstWireSystemMeet>
+	  		<FirstHackableComputerMeet>Hvis jeg forbinder computeren til noget, så burde den kunne hackes...</FirstHackableComputerMeet>
+	  		<NotConnectedComputer>Der er noget med de her ledninger...</NotConnectedComputer>
+	  		<NotConnectedComputer2nd>Hvis jeg forbinder computeren til noget, så burde den kunne hackes...</NotConnectedComputer2nd>
+	  		<StartDumbleDoor>Jeg må op på øverste etage...</StartDumbleDoor>	  		
+	  		<LevelComplete>
+	  			<LevelComplete1>Hold ud far - jeg kommer...</LevelComplete1>
+	  			<LevelComplete2>Okay. Så langt så godt!</LevelComplete2>
+	  			<LevelComplete3>Jeg er på vej far. Det skal nok gå!</LevelComplete3>
+	  			<LevelComplete4>Hold ud, far. Jeg skal nok finde dig...</LevelComplete4>
+	  			<LevelComplete5>Én til klaret, stadig nogle stykker igen...</LevelComplete5>
+	  			<LevelComplete6>Sådan, endnu et kraftfelt er nede!</LevelComplete6>
+	  			<LevelComplete7>Ah, jeg kan ændre farverne på teleporterne</LevelComplete7>
+	  		</LevelComplete>
+	  		<ForTrailer>Du kan ikke længere fortælle mig hva’ jeg må, far...</ForTrailer>
+	  	</Vega>
+	  	<Lennon>
+	  		<FirstFound>Jeg er en certificeret hack-o-matic-bot til tjeneste!</FirstFound>
+	  	</Lennon>
+	  	<Tutorial>
+	  		<TapOnFloor>Tryk på gulvet for at flytte Vega</TapOnFloor>
+	  		<BaseFloor>Træk i slideren for at ændre perspektiv</BaseFloor>
+	  		<FloorRotation>Træk I etagerne for at dreje dem. \n Du kan ikke dreje den etage, som du står på</FloorRotation>
+	  		<PassiveFloor>Du kan ikke dreje den etage, som du står på</PassiveFloor>
+	  	</Tutorial>
+  </Subtitle>
+  <LanguageNames>
+    <English>Engelsk</English>
+    <Danish>Dansk</Danish>
+  </LanguageNames>
+  <Credits>
+   &lt;b&gt;Laser Buddies&lt;/b&gt;
+
+Chris	Bjerremose, Game Director
+Rasmus	Danstrøm, Audio Designer
+Tudor	Dragan, Programmør
+Thomas	Ebeling, Level Designer
+Patrick Helledie, Project Manager
+Tim Skovbølle Holst, CG Artist
+Christian Hvistendal, CG Artist
+Andrea Keiser, QA og UX Manager
+Benjamin Legarth, QA og UX Manager
+Sayid Malekdoost, Lead Programmør
+Benjamin Maksuti, Programmør
+Kasper Passov, Pipeline Programmør
+Kai Ejler Rasmussen, QA Programmør
+Irina Stoynova, Programmør
+Tanja Lind Tankred, Game Designer
+Dilan Yüksel, Art Director
+Felicia Zimmerman, Animator
+  
+  
+&lt;b&gt;Stemmer&lt;/b&gt;
+
+Roger  Paterson, Vegas far (Engelsk)
+Linnea  Pihl, Vega (Engelsk)
+Chris  Bjerremose,  Vegas far (Dansk)
+Tine Silke Lund, Vega (Dansk)
+   
+   
+&lt;b&gt;Tak til&lt;/b&gt;
+
+Jeppe   Bisbjerg 
+Thomas  Howalt 
+Rasmus   Kock 
+Simon   Løvind 
+Kristine  Ploug 
+Kirsten  Skytte 
+Dennis   Virlogeux 
+Gunnar   Wille 
+Martin  Ziir 
+  
+&lt;b&gt;Spiltestere&lt;/b&gt;
+
+Kristian  Ahm 
+Ann-Marie  Bech 
+Mille Krogh Carlsen 
+Vlad  Epure 
+Stine Gjering  Frederiksen 
+Karoline Amalie Sandfeld  Hansen 
+Frederik  Knudsen 
+Alfred  Kristiansen 
+Emil  Lagone 
+Angela  Manna 
+Katharina Bregnhoved  Mortensen 
+Sacha  Nielsen 
+Annemette Falentin  Nyborg 
+Mikkel  Stolborg 
+Simon  Stålhandske 
+Gustav  Timper 
+Niclas  Valentiner 
+
+
+  </Credits>
+  
+</Root>
